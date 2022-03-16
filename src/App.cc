@@ -132,7 +132,7 @@ namespace pge {
   }
 
   void
-  App::draw(const RenderDesc& /*res*/) {
+  App::draw(const RenderDesc& res) {
     // Clear rendering target.
     SetPixelMode(olc::Pixel::ALPHA);
     Clear(olc::Pixel(255, 255, 255, alpha::Transparent));
@@ -144,6 +144,9 @@ namespace pge {
       SetPixelMode(olc::Pixel::NORMAL);
       return;
     }
+
+    drawBoard(res);
+    drawOverlays(res);
 
     SetPixelMode(olc::Pixel::NORMAL);
   }
@@ -196,6 +199,50 @@ namespace pge {
     DrawString(olc::vi2d(0, h / 2 + 2 * dOffset), "Intra cell        : " + toString(it), olc::CYAN);
 
     SetPixelMode(olc::Pixel::NORMAL);
+  }
+
+  void
+  App::drawBoard(const RenderDesc& res) noexcept {
+    // Colors for the board.
+    olc::Pixel bright(238, 238, 213);
+    olc::Pixel dark(149, 69, 53);
+
+    SpriteDesc sd = {};
+    sd.loc = pge::RelativePosition::Center;
+
+    // Assume that the tile size is a square and scale
+    // the tiles so that they occupy one tile.
+    sd.radius = 1.0f;
+
+    // Draw the board.
+    for (unsigned y = 0u ; y < 8u ; ++y) {
+      for (unsigned x = 0u ; x < 8u ; ++x) {
+        unsigned det = (y % 2u + x) % 2u;
+
+        sd.x = x;
+        sd.y = y;
+
+        sd.sprite.tint = (det == 1u ? dark : bright);
+
+        drawRect(sd, res.cf);
+      }
+    }
+  }
+
+  void
+  App::drawOverlays(const RenderDesc& res) noexcept {
+    SpriteDesc sd = {};
+    sd.loc = pge::RelativePosition::Center;
+    sd.radius = 1.0f;
+
+    olc::vi2d mp = GetMousePos();
+    olc::vi2d mtp = res.cf.pixelCoordsToTiles(mp, nullptr);
+
+    sd.x = 1.0f * mtp.x;
+    sd.y = 1.0f * mtp.y;
+
+    sd.sprite.tint = olc::Pixel(0, 255, 0, pge::alpha::AlmostTransparent);
+    drawRect(sd, res.cf);
   }
 
 }
