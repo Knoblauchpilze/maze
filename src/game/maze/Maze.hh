@@ -5,6 +5,7 @@
 # include <vector>
 # include <core_utils/CoreObject.hh>
 # include "Cell.hh"
+# include "Opening.hh"
 
 namespace maze {
 
@@ -78,31 +79,15 @@ namespace maze {
 
       /**
        * @brief - Interface method allowing to generate a new maze.
+       *          The generation in and of itself uses a generic idea
+       *          and some hooks are provided for inheriting mazes
+       *          with different cell types to handle the specific
+       *          part of the process.
        */
-      virtual void
-      generate() = 0;
+      void
+      generate();
 
-      /**
-       * @brief - Used to generate the index of the move going in the
-       *          opposite direction based on the geometry of the cells
-       *          for this maze.
-       * @param door - the door for which the opposite door should be
-       *               returned.
-       * @param inverted - TODO: Handle this.
-       * @return - the index of the opposite door.
-       */
-      virtual unsigned
-      opposite(unsigned door, bool inverted) const noexcept = 0;
-
-      /**
-       * @brief - Whether or not this cell is inverted. TODO: Refine.
-       * @param door - the index of the door to return.
-       * @return - `true` if the door is inverted.
-       */
-      virtual bool
-      inverted(unsigned door) const noexcept = 0;
-
-    private:
+    protected:
 
       /**
        * @brief - A method to transform 2D coordinates to its linear
@@ -110,6 +95,62 @@ namespace maze {
        */
       unsigned
       linear(unsigned x, unsigned y) const noexcept;
+
+      /**
+       * @brief - Used to generate the index of the move going in the
+       *          opposite direction based on the geometry of the cells
+       *          for this maze.
+       * @param door - the door for which the opposite door should be
+       *               returned.
+       * @param inverted - Whether or not the cell to which the door
+       *                   belongs is inverted (as defined in the
+       *                   inverted method).
+       * @return - the index of the opposite door.
+       */
+      virtual unsigned
+      opposite(unsigned door, bool inverted) const noexcept = 0;
+
+      /**
+       * @brief - Whether or not this cell is inverted. This allows to
+       *          handle the case where a cell (due to its number of
+       *          sides) is not always in the same orientation in the
+       *          maze. Typically triangle will have to be upside down
+       *          once in a while to generate a triangular maze. This
+       *          method determines whether the cell at the specified
+       *          coordinates is inverted or not.
+       *          In case the coordinate is not valid an error is raised.
+       * @param x - the x coordinate of the cell.
+       * @param y - the y coordinate of the cell.
+       * @return - `true` if the cell is inverted.
+       */
+      virtual bool
+      inverted(unsigned x, unsigned y) const = 0;
+
+      /**
+       * @brief - Interface method allowing to constrain an opening
+       *          based on the dimensions of the cells. This is used
+       *          whenever a cell is picked for the maze generation.
+       * @param o - output argument describing the opening to modify.
+       */
+      virtual void
+      prepareOpening(Opening& o) const noexcept = 0;
+
+      /**
+       * @brief - Interface method used to compute the index of the
+       *          cell reached by going through the specified door
+       *          for the input coordinates.
+       *          The coordinates are assumed to be valid and the
+       *          door *will* be valid based on the number of cells.
+       * @param x - the x coordinate of the starting position.
+       * @param y - the y coordinate of the starting position.
+       * @param door - the door to go through.
+       * @return - the index of the cell (as a linear value) that is
+       *           reached when going through the door of the cell.
+       */
+      virtual unsigned
+      idFromDoorAndCell(unsigned x, unsigned y, unsigned door) const = 0;
+
+    private:
 
     protected:
 
