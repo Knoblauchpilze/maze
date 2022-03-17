@@ -54,14 +54,15 @@ namespace maze {
       /**
        * @brief - Pick a random door to open among the ones that
        *          are not yet opened.
-       *          In case all the doors are opened, the output
+       *          In case all the doors are obstructed, the output
        *          value will be set to `true`.
-       * @param open - `true` in case all doors are already opened.
-       *               In this case, ignore the return value.
+       * @param boxed - `true` in case all doors are not available
+       *                to be breached. In this case, ignore the
+       *                return value.
        * @return - the index of the door to open.
        */
       unsigned
-      breach(bool& open) const noexcept;
+      breach(bool& boxed) const noexcept;
 
     private:
 
