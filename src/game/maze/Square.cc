@@ -67,4 +67,20 @@ namespace maze {
     return id;
   }
 
+  std::string
+  SquareMaze::doorName(unsigned id, bool /*inverted*/) const noexcept {
+    switch (id) {
+      case 0u:
+        return "right";
+      case 1u:
+        return "bottom";
+      case 2u:
+        return "left";
+      case 3u:
+        return "top";
+      default:
+        return "unknown";
+    }
+  }
+
 }
