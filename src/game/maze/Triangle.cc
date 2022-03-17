@@ -61,8 +61,8 @@ namespace maze {
     // Prevent opening of the top border of the maze.
     // Note that only the inverted triangles will be
     // affected by an opening that can't be performed.
-    if (o.y() == height() - 1u) {
-      o.close(1u);
+    if (o.y() == height() - 1u && o.inverted()) {
+      o.close(2u);
     }
   }
 
