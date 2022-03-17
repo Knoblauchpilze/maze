@@ -150,6 +150,18 @@ namespace maze {
       virtual unsigned
       idFromDoorAndCell(unsigned x, unsigned y, unsigned door) const = 0;
 
+      /**
+       * @brief - Interface method allowing to provide a human readable
+       *          name for a door.
+       * @param id - the index of the door in the cell.
+       * @param inverted - whether the cell to which the door belongs to
+       *                   is inverted.
+       * @return - a string representing the name of the door.
+       */
+      virtual
+      std::string
+      doorName(unsigned id, bool inverted) const noexcept = 0;
+
     private:
 
     protected:

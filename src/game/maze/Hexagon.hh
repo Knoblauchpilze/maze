@@ -62,6 +62,15 @@ namespace maze {
        */
       unsigned
       idFromDoorAndCell(unsigned x, unsigned y, unsigned door) const override;
+
+      /**
+       * @brief - Implementation of the interface method to name a door.
+       * @param id - the index of the door in the cell.
+       * @param inverted - whether the cell of the door is inverted.
+       * @return - a string representing the name of the door.
+       */
+      std::string
+      doorName(unsigned id, bool inverted) const noexcept override;
   };
 
 }

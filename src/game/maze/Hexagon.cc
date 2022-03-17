@@ -118,4 +118,24 @@ namespace maze {
     return id;
   }
 
+  std::string
+  HexagonMaze::doorName(unsigned id, bool /*inverted*/) const noexcept {
+    switch (id) {
+      case 0u:
+        return "bottom right";
+      case 1u:
+        return "bottom";
+      case 2u:
+        return "bottom left";
+      case 3u:
+        return "top left";
+      case 4u:
+        return "top";
+      case 5u:
+        return "top right";
+      default:
+        return "unknown";
+    }
+  }
+
 }

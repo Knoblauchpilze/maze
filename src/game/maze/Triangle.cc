@@ -101,4 +101,17 @@ namespace maze {
     return id;
   }
 
+  std::string
+  TriangleMaze::doorName(unsigned id, bool inverted) const noexcept {
+    switch (id) {
+      case 0u:
+        return "right";
+      case 1u:
+        return inverted ? "left" : "bottom";
+      case 2u:
+        return inverted ? "top": "left";
+      default:
+        return "unknown";
+    }
+  }
 }
