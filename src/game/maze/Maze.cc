@@ -1,5 +1,6 @@
 
 # include "Maze.hh"
+# include <numeric>
 
 namespace maze {
 
@@ -68,6 +69,87 @@ namespace maze {
   Maze::close() {
     for (unsigned id = 0u ; id < m_cells.size() ; ++id) {
       m_cells[id].close();
+    }
+  }
+
+  void
+  Maze::generate() {
+    // Nothing to generate if the maze is empty.
+    if (m_cells.empty()) {
+      return;
+    }
+
+    // Generation variables.
+    unsigned size = width() * height();
+    std::vector<unsigned> ids(size, 0u);
+
+    std::iota(ids.begin(), ids.end(), 0);
+
+    // Close all doors in the maze.
+    close();
+
+    // The algorithm used is taken from this article (in French):
+    // https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe#Fusion_al%C3%A9atoire_de_chemins
+    unsigned opened = 0u;
+    unsigned walls = width() * height() - 1;
+
+    while (opened < walls) {
+      bool valid = true;
+
+      // Find a wall to open.
+      do {
+        valid = true;
+        // Pick a random cell.
+        unsigned id1 = std::rand() % size;
+        unsigned x1 = id1 % width();
+        unsigned y1 = id1 / width();
+        bool inv1 = inverted(x1, y1);
+
+        Opening o(x1, y1, sides(), inv1);
+        prepareOpening(o);
+
+        // Pick a door to open.
+        bool allOpen = false;
+        unsigned door = o.breach(allOpen);
+
+        if (allOpen) {
+          valid = false;
+          continue;
+        }
+
+        // Compute the cell on the other side of the door.
+        unsigned id2 = idFromDoorAndCell(x1, y1, door);
+
+        // Consistency check.
+        if (id2 > size) {
+          error(
+            "Failed to generate maze",
+            "Requested access to cell " + std::to_string(id2) + " when only " +
+            std::to_string(size) + " are available"
+          );
+        }
+
+        // Check if the cell already belongs to the same
+        // region: if yes, we have to pick another wall.
+        if(ids[id1] == ids[id2]) {
+          valid = false;
+          continue;
+        }
+
+        // Open the wall for both cells.
+        m_cells[id1].toggle(door, true);
+        m_cells[id2].toggle(opposite(door, inv1), true);
+
+        // And equalize the identifiers for both regions.
+        unsigned toReplace = ids[id2];
+        for (unsigned id = 0u ; id < size ; ++id) {
+          if (ids[id] == toReplace) {
+            ids[id] = ids[id1];
+          }
+        }
+      } while (!valid);
+
+      ++opened;
     }
   }
 

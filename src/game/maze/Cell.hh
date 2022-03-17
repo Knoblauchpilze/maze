@@ -31,8 +31,8 @@ namespace maze {
        *          bounds for the cell an error is raised.
        *          NOTE: the index starts at `0` and will be set
        *          to the right door (or the cloest approaching
-       *          direction), and then counter clockwise listing
-       *          all the doors.
+       *          direction), and then clockwise listing all the
+       *          doors.
        * @param id - the index of the door.
        * @return - `true` if the cell is opened.
        */

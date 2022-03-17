@@ -98,7 +98,7 @@ namespace pge {
     // Generate the game state.
     m_state = std::make_shared<GameState>(
       olc::vi2d(ScreenWidth(), ScreenHeight()),
-      Screen::Home
+      Screen::Game
     );
 
     m_menus = m_game->generateMenus(ScreenWidth(), ScreenHeight());
@@ -145,7 +145,7 @@ namespace pge {
       return;
     }
 
-    drawBoard(res);
+    drawMaze(res);
     drawOverlays(res);
 
     SetPixelMode(olc::Pixel::NORMAL);
@@ -202,7 +202,7 @@ namespace pge {
   }
 
   void
-  App::drawBoard(const RenderDesc& res) noexcept {
+  App::drawMaze(const RenderDesc& res) noexcept {
     // Colors for the board.
     olc::Pixel bright(238, 238, 213);
     olc::Pixel dark(149, 69, 53);

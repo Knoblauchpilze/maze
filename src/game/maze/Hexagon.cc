@@ -7,210 +7,115 @@ namespace maze {
     Maze(width, height, 6u)
   {}
 
+  unsigned
+  HexagonMaze::opposite(unsigned door, bool /*inverted*/) const noexcept {
+    // The opposite side is reached by adding 3 to the
+    // door's index.
+    return (door + 3u) % sides();
+  }
+
+  bool
+  HexagonMaze::inverted(unsigned /*x*/, unsigned /*y*/) const {
+    // A hexagon is never inverted.
+    return false;
+  }
+
   void
-  HexagonMaze::generate() {
-    bool validWall;
-    int nbWalls, nbOpen(0), m, n, way(0), bway, cell1, cell2, i, oldId;
-    bool *ways = NULL;
-
-    int* id = NULL;
-
-    if(_maze != NULL && _width > 0 && _height > 0)
-    {
-        /* Allocation du tableau des identifiants et du tableau de direction */
-        id = new int[_width * _height];
-        ways = new bool[_nbSide];
-
-        if(id == NULL)
-        {
-            std::cerr << "Unable to allocate memory to store the identifier array" << std::endl;
-        }
-        else if(ways == NULL)
-        {
-            std::cerr << "Unable to allocate memory to store the direction array" << std::endl;
-        }
-        else
-        {
-            this->Close();
-
-            m = _width;
-            n = _height;
-            /*nbWalls = (m - 1) * (n - 1);*/
-            nbWalls = m * n - 1;
-
-            for(i = 0 ; i < _nbSide ; i++)
-            {
-                ways[i] = true;
-            }
-
-            for(i = 0 ; i < _width * _height ; i++)
-            {
-                id[i] = i;
-            }
-
-            while(nbOpen < nbWalls)
-            {
-                do
-                {
-                    /* Remise à zéro des variables */
-                    validWall = true;
-                    for(i = 0 ; i < _nbSide ; i++)
-                    {
-                        ways[i] = true;
-                    }
-
-                    /* Tirage au sort de la première cellule */
-                    cell1 = rand() % (_width * _height);
-
-                    /* Pose des contraintes du mur suivant */
-                    /* Cas où les cellules de droite n'existent pas */
-                        if(cell1 % _width == _width - 1)
-                        {
-                            ways[0] = false;
-                            ways[5] = false;
-                        }
-                    /* Cas où les cellules du haut n'existent pas */
-                        if(cell1 / _width == 0)
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                ways[1] = false;
-                            }
-                            else
-                            {
-                                ways[0] = false;
-                                ways[1] = false;
-                                ways[2] = false;
-                            }
-                        }
-                    /* Cas où les cellules de gauche n'existent pas */
-                        if(cell1 % _width == 0)
-                        {
-                            ways[2] = false;
-                            ways[3] = false;
-                        }
-                    /* Cas où les cellules du bas n'existent pas */
-                        if(cell1 / _width == _height - 1)
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                ways[3] = false;
-                                ways[4] = false;
-                                ways[5] = false;
-                            }
-                            else
-                            {
-                                ways[4] = false;
-                            }
-                        }
-
-                    /* Tirage au sort de la deuxième cellule */
-                    /* way :
-                        0 -> right
-                        1 -> up
-                        2 -> left
-                        3 -> down */
-                        do
-                        {
-                            way = rand() % _nbSide;
-                        }
-                        while(ways[way] == false);
-                        if(way == 0)
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                cell2 = cell1 + 1;
-                            }
-                            else
-                            {
-                                cell2 = cell1 - _width + 1;
-                            }
-                        }
-                        else if(way == 1)
-                        {
-                            cell2 = cell1 - _width;
-                        }
-                        else if(way == 2)
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                cell2 = cell1 - 1;
-                            }
-                            else
-                            {
-                                cell2 = cell1 - _width - 1;
-                            }
-                        }
-                        else if(way == 3)
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                cell2 = cell1 + _width - 1;
-                            }
-                            else
-                            {
-                                cell2 = cell1 - 1;
-                            }
-                        }
-                        else if(way == 4)
-                        {
-                            cell2 = cell1 + _width;
-                        }
-                        else
-                        {
-                            if((cell1 % _width) % 2 == 0)
-                            {
-                                cell2 = cell1 + _width + 1;
-                            }
-                            else
-                            {
-                                cell2 = cell1 + 1;
-                            }
-                        }
-
-                    /* On regarde si on peut ouvrir le mur */
-                    if(id[cell1] == id[cell2])
-                    {
-                        /* Pas possible d'ouvrir ce mur */
-                        validWall = false;
-                    }
-                    else
-                    {
-                        /* Ouverture des deux murs */
-                        bway = this->GetOppositeMove(way, this->IsInvertedCell(cell1));
-                        _maze[cell1]->OpenDoor(way, true);
-                        _maze[cell2]->OpenDoor(bway, true);
-
-                        /* Remplacement de l'identifiant le plus élevé par le plus petit */
-                        oldId = id[cell2];
-                        for(i = 0 ; i < _width * _height ; i++)
-                        {
-                            if(id[i] == oldId)
-                            {
-                                id[i] = id[cell1];
-                            }
-                        }
-                    }
-
-                }
-                while(validWall == false);
-
-                nbOpen++;
-            }
-        }
+  HexagonMaze::prepareOpening(Opening& o) const noexcept {
+    // Prevent opening of the left border of the maze.
+    if (o.x() == 0u) {
+      o.close(2u);
+      o.close(3u);
+    }
+    // Prevent opening of the right border of the maze.
+    if (o.x() == width() - 1u) {
+      o.close(0u);
+      o.close(5u);
+    }
+    // Prevent opening of the bottom border of the maze.
+    if (o.y() == 0u) {
+      // Hexagons with odd x coordinates will be slightly
+      // lower which means more of their doors will have
+      // to be closed.
+      o.close(1u);
+      if (o.x() % 2u == 0u) {
+        o.close(0u);
+        o.close(2u);
+      }
+    }
+    // Prevent opening of the top border of the maze.
+    if (o.y() == height() - 1u) {
+      // Hexagons with even x coordinates will be slightly
+      // lower which means more of their doors will have
+      // to be closed.
+      o.close(4u);
+      if (o.x() % 2u == 0u) {
+        o.close(3u);
+        o.close(5u);
+      }
     }
   }
 
   unsigned
-  HexagonMaze::opposite(unsigned door, bool inverted) const noexcept {
-    /// TODO: Handle this.
-    return 0u;
-  }
+  HexagonMaze::idFromDoorAndCell(unsigned x, unsigned y, unsigned door) const {
+    unsigned id = linear(x, y);
 
-  bool
-  HexagonMaze::inverted(unsigned door) const noexcept {
-    /// TODO: Handle this.
-    return 0u;
+    if (door == 0u) {
+      // Opening the bottom right door. It points to the
+      // cell immediately after the cell for even hexagons
+      // and almost one row before otherwise.
+      if (x % 2u == 0u) {
+        ++id;
+      }
+      else {
+        id -= (width() - 1u);
+      }
+    }
+    else if (door == 1u) {
+      // Opening the bottom door, it points to the cell
+      // one row before in the array.
+      id -= width();
+    }
+    else if (door == 2u) {
+      // Opening the bottom left door. It points to the
+      // cell immediately before the cell for even hexagons
+      // and almost one row before otherwise.
+      if (x % 2u == 0u) {
+        --id;
+      }
+      else {
+        id -= (width() - 1u);
+      }
+    }
+    else if (door == 3u) {
+      // Opening the top left door. It points to the cell
+      // immediately before the cell for odd hexagons and
+      // almost one row after otherwise.
+      if (x % 2u == 1u) {
+        --id;
+      }
+      else {
+        id += (width() + 1u);
+      }
+    }
+    else if (door == 4u) {
+      // Opening the top door, it points to the cell one
+      // row after in the array.
+      id += width();
+    }
+    else {
+      // Opening the top right door. It points to the cell
+      // immediately after the cell for odd hexagons and
+      // almost one row after otherwise.
+      if (x % 2u == 1u) {
+        ++id;
+      }
+      else {
+        id += (width() + 1u);
+      }
+    }
+
+    return id;
   }
 
 }

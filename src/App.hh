@@ -110,7 +110,7 @@ namespace pge {
                const CoordinateFrame& cf);
 
       void
-      drawBoard(const RenderDesc& res) noexcept;
+      drawMaze(const RenderDesc& res) noexcept;
 
       void
       drawOverlays(const RenderDesc& res) noexcept;
