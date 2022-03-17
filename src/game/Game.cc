@@ -66,6 +66,11 @@ namespace pge {
 
   Game::~Game() {}
 
+  const maze::Maze&
+  Game::maze() const noexcept {
+    return *m_maze;
+  }
+
   std::vector<MenuShPtr>
   Game::generateMenus(float width,
                       float height)
