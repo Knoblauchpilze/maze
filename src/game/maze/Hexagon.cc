@@ -49,7 +49,7 @@ namespace maze {
       // lower which means more of their doors will have
       // to be closed.
       o.close(4u);
-      if (o.x() % 2u == 0u) {
+      if (o.x() % 2u == 1u) {
         o.close(3u);
         o.close(5u);
       }
@@ -62,9 +62,9 @@ namespace maze {
 
     if (door == 0u) {
       // Opening the bottom right door. It points to the
-      // cell immediately after the cell for even hexagons
+      // cell immediately after the cell for odd hexagons
       // and almost one row before otherwise.
-      if (x % 2u == 0u) {
+      if (x % 2u == 1u) {
         ++id;
       }
       else {
@@ -78,24 +78,24 @@ namespace maze {
     }
     else if (door == 2u) {
       // Opening the bottom left door. It points to the
-      // cell immediately before the cell for even hexagons
+      // cell immediately before the cell for odd hexagons
       // and almost one row before otherwise.
-      if (x % 2u == 0u) {
-        --id;
-      }
-      else {
-        id -= (width() - 1u);
-      }
-    }
-    else if (door == 3u) {
-      // Opening the top left door. It points to the cell
-      // immediately before the cell for odd hexagons and
-      // almost one row after otherwise.
       if (x % 2u == 1u) {
         --id;
       }
       else {
-        id += (width() + 1u);
+        id -= (width() + 1u);
+      }
+    }
+    else if (door == 3u) {
+      // Opening the top left door. It points to the cell
+      // immediately before the cell for even hexagons and
+      // almost one row after otherwise.
+      if (x % 2u == 0u) {
+        --id;
+      }
+      else {
+        id += (width() - 1u);
       }
     }
     else if (door == 4u) {
@@ -105,9 +105,9 @@ namespace maze {
     }
     else {
       // Opening the top right door. It points to the cell
-      // immediately after the cell for odd hexagons and
+      // immediately after the cell for even hexagons and
       // almost one row after otherwise.
-      if (x % 2u == 1u) {
+      if (x % 2u == 0u) {
         ++id;
       }
       else {
