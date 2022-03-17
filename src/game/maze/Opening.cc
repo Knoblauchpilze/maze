@@ -45,15 +45,23 @@ namespace maze {
   }
 
   unsigned
-  Opening::breach(bool& open) const noexcept {
+  Opening::breach(bool& boxed) const noexcept {
     // In case there are no doors left to open, do
     // nothing and return immediately.
-    open = (m_opened == m_doors.size());
-    if (open) {
+    boxed = (m_opened == 0u);
+    if (boxed) {
       return 0u;
     }
 
-    return std::rand() % m_doors.size();
+    unsigned id = 0u;
+    bool valid = false;
+
+    while (!valid) {
+      id = std::rand() % m_doors.size();
+      valid = (m_doors[id] == true);
+    }
+
+    return id;
   }
 
 }

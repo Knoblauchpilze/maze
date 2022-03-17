@@ -1,6 +1,7 @@
 
 # include "Game.hh"
 # include <cxxabi.h>
+# include <core_utils/Chrono.hh>
 # include "Menu.hh"
 # include "Triangle.hh"
 # include "Square.hh"
@@ -11,6 +12,9 @@
 
 /// @brief - The height of the sides menu in pixels.
 # define SIDES_MENU_HEIGHT 50
+
+/// @brief - The default dimensions of the maze.
+# define MAZE_DEFAULT_DIMENSIONS 50
 
 namespace {
 
@@ -56,8 +60,8 @@ namespace pge {
 
     m_menus(),
 
-    m_width(10u),
-    m_height(10u),
+    m_width(MAZE_DEFAULT_DIMENSIONS),
+    m_height(MAZE_DEFAULT_DIMENSIONS),
     m_sides(4u),
     m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height))
   {
@@ -244,7 +248,10 @@ namespace pge {
       utils::Level::Info
     );
 
-    m_maze->generate();
+    {
+      utils::ChronoMilliseconds c("Maze generated", "maze");
+      m_maze->generate();
+    }
   }
 
   void
