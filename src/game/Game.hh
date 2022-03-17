@@ -4,6 +4,7 @@
 # include <vector>
 # include <memory>
 # include <core_utils/CoreObject.hh>
+# include "Maze.hh"
 
 namespace pge {
 
@@ -108,6 +109,34 @@ namespace pge {
       void
       resume();
 
+      /**
+       * @brief - Defines the new width of the maze in cells.
+       * @param width - the width of the maze in cells.
+       */
+      void
+      setMazeWidth(unsigned width) noexcept;
+
+      /**
+       * @brief - Defines the new height of the maze in cells.
+       * @param height - the height of the maze in cells.
+       */
+      void
+      setMazeHeight(unsigned height) noexcept;
+
+      /**
+       * @brief - Defines the number of sides for each cell of
+       *          the maze of the game.
+       * @param sides - the number of sides for the cells.
+       */
+      void
+      setCellSidesCount(unsigned sides) noexcept;
+
+      /**
+       * @brief - Performs the generation of a new maze.
+       */
+      void
+      generateMaze();
+
     private:
 
       /**
@@ -127,14 +156,20 @@ namespace pge {
       virtual void
       updateUI();
 
+      /**
+       * @brief - Used to reset the maze and create a new one with
+       *          the dimensions and number of sides for cells as
+       *          defined by the internal attributes.
+       */
+      void
+      resetMaze() noexcept;
+
     private:
 
-      /**
-       * @brief - Convenience information defining the state of the
-       *          game. It includes information about whether the
-       *          menus should be displayed and if the user actions
-       *          should be interpreted or not.
-       */
+      /// @brief - Convenience information defining the state of the
+      /// game. It includes information about whether the menus should
+      /// be displayed and if the user actions should be interpreted
+      // or not.
       struct State {
         // Defines whether this world is paused (i.e.
         // internal attributes of the mobs/blocks/etc
@@ -154,10 +189,49 @@ namespace pge {
         bool terminated;
       };
 
+      /// @brief - Convenience structure allowing to regroup
+      /// all info about the menu in a single struct.
+      struct Menus {
+        // The current width of the maze.
+        MenuShPtr width;
+
+        // The current height of the maze.
+        MenuShPtr height;
+
+        // The current number of sides for each cell of the maze.
+        MenuShPtr sides;
+      };
+
       /**
        * @brief - The definition of the game state.
        */
       State m_state;
+
+      /**
+       * @brief - The menus displaying information about the
+       *          current state of the game.
+       */
+      Menus m_menus;
+
+      /**
+       * @brief - The width of the maze.
+       */
+      unsigned m_width;
+
+      /**
+       * @brief - The height of the maze.
+       */
+      unsigned m_height;
+
+      /**
+       * @brief - The number of sides for the cells of the maze.
+       */
+      unsigned m_sides;
+
+      /**
+       * @brief - The maze attached to the game.
+       */
+      maze::MazeShPtr m_maze;
   };
 
   using GameShPtr = std::shared_ptr<Game>;
