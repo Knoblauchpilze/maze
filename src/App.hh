@@ -6,6 +6,7 @@
 # include "Menu.hh"
 # include "Game.hh"
 # include "GameState.hh"
+# include "Maze.hh"
 
 namespace pge {
 
@@ -110,10 +111,19 @@ namespace pge {
                const CoordinateFrame& cf);
 
       void
-      drawMaze(const RenderDesc& res) noexcept;
+      drawOverlays(const RenderDesc& res) noexcept;
 
       void
-      drawOverlays(const RenderDesc& res) noexcept;
+      drawTriangularMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
+
+      void
+      drawSquareMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
+
+      void
+      drawPentagonalMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
+
+      void
+      drawHexagonalMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
 
     private:
 

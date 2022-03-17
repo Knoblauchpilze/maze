@@ -24,6 +24,13 @@ namespace pge {
       ~Game();
 
       /**
+       * @brief - Return the maze attached to this game.
+       * @return - the maze currently in use.
+       */
+      const maze::Maze&
+      maze() const noexcept;
+
+      /**
        * @brief - Used to perform the creation of the menus
        *          allowing to control the world wrapped by
        *          this game.

@@ -145,7 +145,28 @@ namespace pge {
       return;
     }
 
-    drawMaze(res);
+    const maze::Maze& m = m_game->maze();
+    switch (m.sides()) {
+      case 3u:
+        drawTriangularMaze(res, m);
+        break;
+      case 4u:
+        drawSquareMaze(res, m);
+        break;
+      case 5u:
+        drawPentagonalMaze(res, m);
+        break;
+      case 6u:
+        drawHexagonalMaze(res, m);
+        break;
+      default:
+        error(
+          "Failed to render maze",
+          "Cells with " + std::to_string(m.sides()) + " side(s) are not supported"
+        );
+        break;
+    }
+
     drawOverlays(res);
 
     SetPixelMode(olc::Pixel::NORMAL);
@@ -202,34 +223,6 @@ namespace pge {
   }
 
   void
-  App::drawMaze(const RenderDesc& res) noexcept {
-    // Colors for the board.
-    olc::Pixel bright(238, 238, 213);
-    olc::Pixel dark(149, 69, 53);
-
-    SpriteDesc sd = {};
-    sd.loc = pge::RelativePosition::Center;
-
-    // Assume that the tile size is a square and scale
-    // the tiles so that they occupy one tile.
-    sd.radius = 1.0f;
-
-    // Draw the board.
-    for (unsigned y = 0u ; y < 8u ; ++y) {
-      for (unsigned x = 0u ; x < 8u ; ++x) {
-        unsigned det = (y % 2u + x) % 2u;
-
-        sd.x = x;
-        sd.y = y;
-
-        sd.sprite.tint = (det == 1u ? dark : bright);
-
-        drawRect(sd, res.cf);
-      }
-    }
-  }
-
-  void
   App::drawOverlays(const RenderDesc& res) noexcept {
     SpriteDesc sd = {};
     sd.loc = pge::RelativePosition::Center;
@@ -243,6 +236,30 @@ namespace pge {
 
     sd.sprite.tint = olc::Pixel(0, 255, 0, pge::alpha::AlmostTransparent);
     drawRect(sd, res.cf);
+  }
+
+  void
+  App::drawTriangularMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
+    /// TODO: Handle this.
+    DrawStringDecal(olc::vi2d(200, 300), "Unsupported triangular rendering !", olc::RED);
+  }
+
+  void
+  App::drawSquareMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
+    /// TODO: Handle this.
+    DrawStringDecal(olc::vi2d(200, 300), "Unsupported square rendering !", olc::RED);
+  }
+
+  void
+  App::drawPentagonalMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
+    /// TODO: Handle this.
+    DrawStringDecal(olc::vi2d(200, 300), "Unsupported pentagonal rendering !", olc::RED);
+  }
+
+  void
+  App::drawHexagonalMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
+    /// TODO: Handle this.
+    DrawStringDecal(olc::vi2d(200, 300), "Unsupported hexagonal rendering !", olc::RED);
   }
 
 }
