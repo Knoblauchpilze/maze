@@ -109,10 +109,12 @@ namespace maze {
         prepareOpening(o);
 
         // Pick a door to open.
-        bool allOpen = false;
-        unsigned door = o.breach(allOpen);
+        bool boxed = false;
+        unsigned door = o.breach(boxed);
 
-        if (allOpen) {
+        if (boxed) {
+          error("Cell " + std::to_string(x1) + "x" + std::to_string(y1) + " is boxes, can't open wall");
+
           valid = false;
           continue;
         }
@@ -136,19 +138,32 @@ namespace maze {
           continue;
         }
 
+        log(
+          "Merging regions " + std::to_string(ids[id1]) +
+          " to " + std::to_string(ids[id2]) +
+          " after opening door " + doorName(door, inv1) +
+          " in " + std::to_string(x1) + "x" + std::to_string(y1) +
+          " to door " + doorName(opposite(door, inv1), inverted(id2 % width(), id2 / width())) +
+          " in " + std::to_string(id2 % width()) + "x" + std::to_string(id2 / width()),
+          utils::Level::Verbose
+        );
+
         // Open the wall for both cells.
         m_cells[id1].toggle(door, true);
         m_cells[id2].toggle(opposite(door, inv1), true);
 
         // And equalize the identifiers for both regions.
-        unsigned toReplace = ids[id2];
+        unsigned toReplace = std::max(ids[id1], ids[id2]);
+        unsigned newArea = std::min(ids[id1], ids[id2]);
+
         for (unsigned id = 0u ; id < size ; ++id) {
           if (ids[id] == toReplace) {
-            ids[id] = ids[id1];
+            ids[id] = newArea;
           }
         }
       } while (!valid);
 
+      // Opened one more wall.
       ++opened;
     }
   }
