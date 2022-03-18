@@ -111,16 +111,10 @@ namespace pge {
                const CoordinateFrame& cf);
 
       void
+      drawMaze(const RenderDesc& res) noexcept;
+
+      void
       drawOverlays(const RenderDesc& res) noexcept;
-
-      void
-      drawTriangularMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
-
-      void
-      drawSquareMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
-
-      void
-      drawHexagonalMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
 
     private:
 

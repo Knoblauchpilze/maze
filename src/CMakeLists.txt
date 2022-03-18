@@ -26,6 +26,7 @@ add_subdirectory (
 	)
 
 target_sources (main-app_lib PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/MazeDrawer.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/App.cc
 	)
 
