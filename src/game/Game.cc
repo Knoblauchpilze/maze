@@ -14,7 +14,7 @@
 # define SIDES_MENU_HEIGHT 50
 
 /// @brief - The default dimensions of the maze.
-# define MAZE_DEFAULT_DIMENSIONS 5
+# define MAZE_DEFAULT_DIMENSIONS 50
 
 namespace {
 
@@ -62,8 +62,8 @@ namespace pge {
 
     m_width(MAZE_DEFAULT_DIMENSIONS),
     m_height(MAZE_DEFAULT_DIMENSIONS),
-    m_sides(6u),
-    m_maze(std::make_shared<maze::HexagonMaze>(m_width, m_height))
+    m_sides(3u),
+    m_maze(std::make_shared<maze::TriangleMaze>(m_width, m_height))
   {
     setService("game");
   }
