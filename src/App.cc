@@ -161,9 +161,6 @@ namespace pge {
       case 4u:
         drawSquareMaze(res, m);
         break;
-      case 5u:
-        drawPentagonalMaze(res, m);
-        break;
       case 6u:
         drawHexagonalMaze(res, m);
         break;
@@ -533,12 +530,6 @@ namespace pge {
         }
       }
     }
-  }
-
-  void
-  App::drawPentagonalMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
-    /// TODO: Handle rendering of pentagonal maze.
-    DrawStringDecal(olc::vi2d(200, 300), "Unsupported pentagonal rendering !", olc::RED);
   }
 
   void

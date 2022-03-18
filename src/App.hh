@@ -120,9 +120,6 @@ namespace pge {
       drawSquareMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
 
       void
-      drawPentagonalMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
-
-      void
       drawHexagonalMaze(const RenderDesc& res, const maze::Maze& maze) noexcept;
 
     private:

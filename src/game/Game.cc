@@ -62,8 +62,8 @@ namespace pge {
 
     m_width(MAZE_DEFAULT_DIMENSIONS),
     m_height(MAZE_DEFAULT_DIMENSIONS),
-    m_sides(4u),
-    m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height))
+    m_sides(6u),
+    m_maze(std::make_shared<maze::HexagonMaze>(m_width, m_height))
   {
     setService("game");
   }
@@ -107,13 +107,11 @@ namespace pge {
 
     MenuShPtr triangle = generateMenu(pos, dims, "Triangle", "triangle", true, true);
     MenuShPtr square = generateMenu(pos, dims, "Square", "square", true, true);
-    MenuShPtr pentagon = generateMenu(pos, dims, "Pentagon", "pentagon", true, true);
     MenuShPtr hexagon = generateMenu(pos, dims, "Hexagon", "hexagon", true, true);
 
     // Register menus in the parent.
     cells->addMenu(triangle);
     cells->addMenu(square);
-    cells->addMenu(pentagon);
     cells->addMenu(hexagon);
     triangle->setSimpleAction(
       [this](Game& g) {
@@ -123,11 +121,6 @@ namespace pge {
     square->setSimpleAction(
       [this](Game& g) {
         g.setCellSidesCount(4u);
-      }
-    );
-    pentagon->setSimpleAction(
-      [this](Game& g) {
-        g.setCellSidesCount(5u);
       }
     );
     hexagon->setSimpleAction(
@@ -278,9 +271,6 @@ namespace pge {
         break;
       case 4u:
         text = "square";
-        break;
-      case 5u:
-        text = "pentagon";
         break;
       case 6u:
         text = "hexagon";
