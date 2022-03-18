@@ -46,7 +46,7 @@ namespace maze {
   TriangleMaze::prepareOpening(Opening& o) const noexcept {
     // Prevent opening of the left border of the maze.
     if (o.x() == 0u) {
-      o.close(o.y() == 0u ? 1u : 2u);
+      o.close(o.y() % 2u == 0u ? 1u : 2u);
     }
     // Prevent opening of the right border of the maze.
     if (o.x() == width() - 1u) {
