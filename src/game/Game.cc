@@ -62,8 +62,8 @@ namespace pge {
 
     m_width(MAZE_DEFAULT_DIMENSIONS),
     m_height(MAZE_DEFAULT_DIMENSIONS),
-    m_sides(3u),
-    m_maze(std::make_shared<maze::TriangleMaze>(m_width, m_height))
+    m_sides(4u),
+    m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height))
   {
     setService("game");
   }
