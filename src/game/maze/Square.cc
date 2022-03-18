@@ -7,16 +7,16 @@ namespace maze {
     Maze(width, height, 4u)
   {}
 
-  unsigned
-  SquareMaze::opposite(unsigned door, bool /*inverted*/) const noexcept {
-    // A drawing helps as well, but it's pretty simple.
-    return (door + 2u) % sides();
-  }
-
   bool
   SquareMaze::inverted(unsigned /*x*/, unsigned /*y*/) const {
     // A square is never inverted.
     return false;
+  }
+
+  unsigned
+  SquareMaze::opposite(unsigned door, bool /*inverted*/) const noexcept {
+    // A drawing helps as well, but it's pretty simple.
+    return (door + 2u) % sides();
   }
 
   void

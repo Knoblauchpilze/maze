@@ -16,6 +16,16 @@ namespace maze {
        */
       TriangleMaze(unsigned width, unsigned height);
 
+      /**
+       * @brief - Implementation of the interface method to handle
+       *          whether a cell is inverted.
+       * @param x - the x coordinate of the cell.
+       * @param y - the y coordinate of the cell.
+       * @return - `true` if the cell is inverted.
+       */
+      bool
+      inverted(unsigned x, unsigned y) const override;
+
     protected:
 
       /**
@@ -30,16 +40,6 @@ namespace maze {
        */
       unsigned
       opposite(unsigned door, bool inverted) const noexcept override;
-
-      /**
-       * @brief - Implementation of the interface method to handle
-       *          whether a cell is inverted.
-       * @param x - the x coordinate of the cell.
-       * @param y - the y coordinate of the cell.
-       * @return - `true` if the cell is inverted.
-       */
-      bool
-      inverted(unsigned x, unsigned y) const override;
 
       /**
        * @brief - Implementation of the interface method to handle

@@ -7,18 +7,6 @@ namespace maze {
     Maze(width, height, 3u)
   {}
 
-  unsigned
-  TriangleMaze::opposite(unsigned door, bool inverted) const noexcept {
-    // The opposite move is different in case we have an
-    // inverted cell or not.
-    // Drawing the situation helps here.
-    if (inverted) {
-      return (door + sides() - 1u) % sides();
-    }
-
-    return (door + 1u) % sides();
-  }
-
   bool
   TriangleMaze::inverted(unsigned x, unsigned y) const {
     // Invalid cell coordinates.
@@ -40,6 +28,18 @@ namespace maze {
 
     // In an odd row every odd triangle is inverted.
     return (x % 2u == 1u);
+  }
+
+  unsigned
+  TriangleMaze::opposite(unsigned door, bool inverted) const noexcept {
+    // The opposite move is different in case we have an
+    // inverted cell or not.
+    // Drawing the situation helps here.
+    if (inverted) {
+      return (door + sides() - 1u) % sides();
+    }
+
+    return (door + 1u) % sides();
   }
 
   void

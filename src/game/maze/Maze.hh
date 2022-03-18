@@ -87,6 +87,22 @@ namespace maze {
       void
       generate();
 
+      /**
+       * @brief - Whether or not this cell is inverted. This allows to
+       *          handle the case where a cell (due to its number of
+       *          sides) is not always in the same orientation in the
+       *          maze. Typically triangle will have to be upside down
+       *          once in a while to generate a triangular maze. This
+       *          method determines whether the cell at the specified
+       *          coordinates is inverted or not.
+       *          In case the coordinate is not valid an error is raised.
+       * @param x - the x coordinate of the cell.
+       * @param y - the y coordinate of the cell.
+       * @return - `true` if the cell is inverted.
+       */
+      virtual bool
+      inverted(unsigned x, unsigned y) const = 0;
+
     protected:
 
       /**
@@ -109,22 +125,6 @@ namespace maze {
        */
       virtual unsigned
       opposite(unsigned door, bool inverted) const noexcept = 0;
-
-      /**
-       * @brief - Whether or not this cell is inverted. This allows to
-       *          handle the case where a cell (due to its number of
-       *          sides) is not always in the same orientation in the
-       *          maze. Typically triangle will have to be upside down
-       *          once in a while to generate a triangular maze. This
-       *          method determines whether the cell at the specified
-       *          coordinates is inverted or not.
-       *          In case the coordinate is not valid an error is raised.
-       * @param x - the x coordinate of the cell.
-       * @param y - the y coordinate of the cell.
-       * @return - `true` if the cell is inverted.
-       */
-      virtual bool
-      inverted(unsigned x, unsigned y) const = 0;
 
       /**
        * @brief - Interface method allowing to constrain an opening
@@ -161,8 +161,6 @@ namespace maze {
       virtual
       std::string
       doorName(unsigned id, bool inverted) const noexcept = 0;
-
-    private:
 
     protected:
 

@@ -7,17 +7,17 @@ namespace maze {
     Maze(width, height, 6u)
   {}
 
+  bool
+  HexagonMaze::inverted(unsigned /*x*/, unsigned /*y*/) const {
+    // A hexagon is never inverted.
+    return false;
+  }
+
   unsigned
   HexagonMaze::opposite(unsigned door, bool /*inverted*/) const noexcept {
     // The opposite side is reached by adding 3 to the
     // door's index.
     return (door + 3u) % sides();
-  }
-
-  bool
-  HexagonMaze::inverted(unsigned /*x*/, unsigned /*y*/) const {
-    // A hexagon is never inverted.
-    return false;
   }
 
   void
