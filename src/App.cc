@@ -1,5 +1,6 @@
 
 # include "App.hh"
+# include <cstdlib>
 # include <maths_utils/ComparisonUtils.hh>
 
 namespace pge {
@@ -66,6 +67,10 @@ namespace pge {
 
     if (c.keys[controls::keys::P]) {
       m_game->togglePause();
+    }
+
+    if (c.keys[controls::keys::G]) {
+      m_game->generateMaze();
     }
   }
 
@@ -245,9 +250,110 @@ namespace pge {
   }
 
   void
-  App::drawSquareMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
-    /// TODO: Handle this.
-    DrawStringDecal(olc::vi2d(200, 300), "Unsupported square rendering !", olc::RED);
+  App::drawSquareMaze(const RenderDesc& res, const maze::Maze& maze) noexcept {
+    // Colors for the cells and their borders.
+    olc::Pixel cell(13, 2, 8);
+    olc::Pixel border(0, 143, 17);
+    // olc::Pixel border(0, 255, 65);
+    // olc::Pixel border(0, 59, 0);
+
+    SpriteDesc sd = {};
+    sd.loc = pge::RelativePosition::Center;
+
+    // Assume that the tile size is a square and scale
+    // the cells so that they occupy one tile.
+    sd.radius = 1.0f;
+
+    // A convenience lambda to draw a door.
+    auto drawDoor = [this, &border, &res](unsigned x, unsigned y, unsigned door) {
+      // Note that as we want to draw a rectangle and
+      // not a square, we have to rely to the low-level
+      // drawing primitives.
+      float dx = x;
+      float dy = y;
+
+      // The dimensions of the doors.
+      float doorPerc = 0.05f;
+
+      olc::vf2d size = res.cf.tileSize();
+
+      bool valid = true;
+      switch (door) {
+        case 0u:
+          // Right door.
+          dx += (1.0f - doorPerc);
+          size.x *= doorPerc;
+          break;
+        case 1u:
+          // Bottom door.
+          dy += (1.0f - doorPerc);
+          size.y *= doorPerc;
+          break;
+        case 2u:
+          // Left door.
+          size.x *= doorPerc;
+          break;
+        case 3u:
+          // Top door.
+          size.y *= doorPerc;
+          break;
+        default:
+          valid = false;
+          warn("Requesting to draw door " + std::to_string(door) + " at " + std::to_string(x) + "x" + std::to_string(y));
+          break;
+      }
+
+      // In case of an invalid door do not draw anything
+      if (!valid) {
+        return;
+      }
+
+      // Clamp the size of a door to always be at least one
+      // pixel wide so that it is visible.
+      size.x = std::max(size.x, 1.0f);
+      size.y = std::max(size.y, 1.0f);
+
+      olc::vf2d p = res.cf.tileCoordsToPixels(dx, dy, pge::RelativePosition::Center, 1.0f);
+      FillRectDecal(p, size, border);
+    };
+
+    unsigned count = 0u;
+
+    // We assume the cell `0, 0` of the maze has the same
+    // world coordinates.
+    for (unsigned y = 0u ; y < maze.height() ; ++y) {
+      for (unsigned x = 0u ; x < maze.width() ; ++x) {
+        sd.x = x;
+        // The maze is generated upside down.
+        sd.y = maze.height() - 1u - y;
+
+        // Discard invisible cells.
+        if (!res.visible(olc::vf2d(sd.x, sd.y))) {
+          ++count;
+          continue;
+        }
+
+        sd.sprite.tint = cell;
+
+        drawRect(sd, res.cf);
+
+        // Draw each closed door of the cell.
+        const maze::Cell& c = maze.at(x, y);
+
+        if (!c(0u)) {
+          drawDoor(sd.x, sd.y, 0u);
+        }
+        if (!c(1u)) {
+          drawDoor(sd.x, sd.y, 1u);
+        }
+        if (!c(2u)) {
+          drawDoor(sd.x, sd.y, 2u);
+        }
+        if (!c(3u)) {
+          drawDoor(sd.x, sd.y, 3u);
+        }
+      }
+    }
   }
 
   void
