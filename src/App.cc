@@ -245,7 +245,7 @@ namespace pge {
 
   void
   App::drawTriangularMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
-    /// TODO: Handle this.
+    /// TODO: Handle rendering of triangular maze.
     DrawStringDecal(olc::vi2d(200, 300), "Unsupported triangular rendering !", olc::RED);
   }
 
@@ -358,13 +358,13 @@ namespace pge {
 
   void
   App::drawPentagonalMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
-    /// TODO: Handle this.
+    /// TODO: Handle rendering of pentagonal maze.
     DrawStringDecal(olc::vi2d(200, 300), "Unsupported pentagonal rendering !", olc::RED);
   }
 
   void
   App::drawHexagonalMaze(const RenderDesc& /*res*/, const maze::Maze& /*maze*/) noexcept {
-    /// TODO: Handle this.
+    /// TODO: Handle rendering of hexagonal maze.
     DrawStringDecal(olc::vi2d(200, 300), "Unsupported hexagonal rendering !", olc::RED);
   }
 

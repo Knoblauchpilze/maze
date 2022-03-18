@@ -2,6 +2,9 @@
 # include "Maze.hh"
 # include <numeric>
 
+/// TODO: Handle various strategies to generate mazes
+/// https://en.wikipedia.org/wiki/Maze_generation_algorithm
+
 namespace maze {
 
   Maze::Maze(unsigned width,
