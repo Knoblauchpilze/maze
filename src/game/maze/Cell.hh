@@ -65,8 +65,16 @@ namespace maze {
 
       /**
        * @brief - The list of doors of this cell.
+       *          NOTE: We use a vector of bools and not a bitset
+       *          as the bitset requires to know the size of the
+       *          'vector' at compile time. We could probably use
+       *          a specialzied version of the cell class but it
+       *          seems like overkill.
+       *          As per this thread though, it seems unclear if
+       *          this is actually a performance tradeof:
+       *          https://stackoverflow.com/questions/36932684/c11-vectorbool-performance-issue-with-code-example
+       *          So for now it serves our purposes.
        */
-      /// TODO: Replace with bitset ?
       std::vector<bool> m_doors;
   };
 

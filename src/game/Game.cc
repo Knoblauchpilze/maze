@@ -14,7 +14,7 @@
 # define SIDES_MENU_HEIGHT 50
 
 /// @brief - The default dimensions of the maze.
-# define MAZE_DEFAULT_DIMENSIONS 50
+# define MAZE_DEFAULT_DIMENSIONS 5
 
 namespace {
 
@@ -160,8 +160,6 @@ namespace pge {
     if (m_state.paused) {
       return true;
     }
-
-    /// TODO: Handle this.
 
     updateUI();
 
