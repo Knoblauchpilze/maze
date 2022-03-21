@@ -250,7 +250,17 @@ The home menu allows to choose what the user wants to do.
 
 ### Load maze
 
-TODO: Handle the loading of a maze.
+The save menu allows to load a previously saved maze. A list of files is shown, the user can click on `Previous page` or `Next page` if available, and also on any of the listed worlds.
+
+When the user clicks on one of the save, the application will attempt to load the data and move to the `Game` screen. In case of failure the screen will stay on the load screen.
+
+![Save menu](resources/save_screen.png)
+
+The list of files is fetched from a default directory which is located at `data/saves` and only files with the extension `mz` are displayed.
+
+In case the user chooses to save a maze, a new name is generated which should not match any of the existing files. The name of the file will be similar to `"data/saves/save_ID.mz"`.
+
+Note that the save does not include the strategy used to generate the maze so we pick one by default. It does not impact the actual visual of the maze and does not prevent it to be loaded, it will only have some relevance when the user attempts to generate a new one.
 
 ### Generate a new/Explore a maze
 
@@ -290,5 +300,21 @@ The user can select both the shape of the cells for the maze, and the algorithm 
 
 ## Serialization
 
-TODO: Handle serialization.
+A maze once generated can be serialized into a file to be loaded later. The serialization process aims at saving all the important information to the file.
+
+### Format
+
+The format for serialized mazes is a binary file which contains information about the dimensions of the maze and the shape of cells. Then all the cells defining the maze are stored.
+
+So the format is as follows:
+
+```
+4 bytes for the width of the maze in pixels.
+4 bytes for the height of the maze in pixels.
+4 bytes for the number of doors for each cell.
+
+width * height * sides bits defining the doors for each cell.
+```
+
+Note that each cell is stored in order, starting with the cell at `(0, 0)`, then `(1, 0)` up to `(width - 1, 0)`, then `(0, 1)`, etc.
 
