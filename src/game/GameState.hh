@@ -1,10 +1,12 @@
 #ifndef    GAME_STATE_HH
 # define   GAME_STATE_HH
 
+# include <vector>
 # include <memory>
 # include <core_utils/CoreObject.hh>
 # include "olcEngine.hh"
 # include "Menu.hh"
+# include "SavedGames.hh"
 
 namespace pge {
 
@@ -30,6 +32,12 @@ namespace pge {
        */
       GameState(const olc::vi2d& dims,
                 const Screen& screen);
+
+      /**
+       * @brief - Destructor to disconnect the signal from the
+       *          saved games object.
+       */
+      ~GameState();
 
       /**
        * @brief - Retrieves the currently selected screen.
@@ -73,6 +81,14 @@ namespace pge {
 
     private:
 
+      /**
+       * @brief - A slot used to receive notifications of a user
+       *          picking a new saved game.
+       * @param game - the path to the saved game that was picked.
+       */
+      void
+      onSavedGamePicked(const std::string& game);
+
       void
       generateHomeScreen(const olc::vi2d& dims);
 
@@ -102,6 +118,12 @@ namespace pge {
        *          on the loading game screen.
        */
       MenuShPtr m_loadGame;
+
+      /**
+       * @brief - The data needed to represent the list of games
+       *          available for loading.
+       */
+      SavedGames m_savedGames;
 
       /**
        * @brief - Defines the menu to display in case
