@@ -33,6 +33,8 @@ In the application we support three kinds of cells:
 
 These shapes are selected because they allow a regular tiling of the plane (see [here](https://en.wikipedia.org/wiki/List_of_regular_polytopes_and_compounds#Euclidean_tilings)).
 
+**IMPORTANTE NOTE:** Doors for a cell are always laid out in a clockwise way, starting from what is the most similar to what would be a right-facing door.
+
 ### General consideration
 
 In order to create the maze, we have to lay out the cells in a way where all of them are connected. Depending on the shape of the cells, it can be more or less complex.
@@ -135,15 +137,73 @@ Convenience method to assign a name to the door: this is mainly useful to debug 
 
 ### Triangular maze
 
-TODO: Handle triangular mazes doc.
+A triangular maze is a regular tiling of the plane with triangles. In order to connect correctly the triangles with each other, we have to resort to the `inverted` mechanism: this will basically turn some of the triangles upside down to connect them better.
+
+The doors are named `"right"`, `"bottom"`, `"left"` and `"top"`, but not all of them are availabel in all triangles: which ones precisely are available depend on whether the triangle is inverted.
+
+![Triangle](resources/triangle.png)
+
+The left triangle is considered `"regular"` and the right one is `"inverted"`. The doors are slightly different but they are always laid out clockwise.
+
+Each triangle is connected to the other in the following way:
+* For regular triangles:
+  * Door 0 - Door 1
+  * Door 1 - Door 2
+  * Door 2 - Door 0
+* For inverted triangles:
+  * Door 0 - Door 2
+  * Door 1 - Door 0
+  * Door 2 - Door 1
+
+When generating a maze, we consider that the first cell at `(0, 0)` is an inverted triangle, and move from here. The general idea is that:
+* even triangles in even rows are inverted.
+* odd triangles in odd rows are inverted.
+
+An example view of a triangular maze is as follows:
+
+![Triangular maze](resources/triangle_maze.png)
 
 ### Square maze
 
-TODO: Handle square mazes doc.
+A square maze is probably the most intuitive type of maze. It doesn't differ that much from a triangular maze in its essence but is more easily understandable visually.
+
+Unlike the triangular maze, it does not require inverted cells. Each cell is similar and is connected in a neat way to all the others.
+
+The doors are named `"right"`, `"bottom"`, `"left"` and `"top"`. These doors are labeled in order from `0` to `1`. This is the representation of a canonical square:
+
+![Square](resources/square.png)
+
+Each square is connected to the other in the following way:
+* Door 0 - Door 2
+* Door 1 - Door 3
+* Door 2 - Door 0
+* Door 3 - Door 1
+
+An example view of a square maze is as follows:
+
+![Square maze](resources/square_maze.png)
 
 ### Hexagonal maze
 
-TODO: Handle hexagonal mazes doc.
+An hexagonal maze is composed of a regular tiling of hexagons. The only subtelty compared to the square case is that the hexagons require a slightly more elaborate alignment to all connect to one another.
+
+The doors are named `"bottom right"`, `"bottom"`, `"bottom left"`, `"top left"`, `"top"` and `"top right"`. This is the representation of a canonical hexagon:
+
+![Hexagon](resources/hexagon.png)
+
+As for squares, we don't have such a thing as inverted hexagons: all of them are connected in a similar way and just need to be placed close to one another in a specific way.
+
+Each hexagon is connected to the other in the following way:
+* Door 0 - Door 3
+* Door 1 - Door 4
+* Door 2 - Door 5
+* Door 3 - Door 0
+* Door 4 - Door 1
+* Door 5 - Door 2
+
+An example view of a hexagonal maze is as follows:
+
+![Hexagonal maze](resources/hexagon_maze.png)
 
 ## Generation
 
@@ -209,6 +269,8 @@ The user can zoom in with the mouse wheel, and pan by holding the right mouse bu
 Also note that the view is not responsive when the maze is being generated.
 
 The user can save the maze that is currently displayed at any time by pressing the `S` key. Also, the user can generate a new maze by using the `G` key.
+
+An overlay is displayed to indicate which cell the user is hovering over and adapts based on the type of the cell.
 
 #### Configuration menu
 
