@@ -13,15 +13,6 @@
 /// @brief - The height of the sides menu in pixels.
 # define SIDES_MENU_HEIGHT 50
 
-/// @brief - The height of the strategy menu in pixels.
-# define STRATEGY_MENU_HEIGHT 50
-
-/// @brief - The default dimensions of the maze.
-# define MAZE_DEFAULT_DIMENSIONS 50
-
-/// @brief - The default generation strategy for the maze.
-# define MAZE_DEFAULT_STRATEGY maze::Strategy::RandomizedKruskal
-
 namespace {
 
   pge::MenuShPtr
@@ -66,9 +57,10 @@ namespace pge {
 
     m_menus(),
 
-    m_width(MAZE_DEFAULT_DIMENSIONS),
-    m_height(MAZE_DEFAULT_DIMENSIONS),
-    m_strategy(MAZE_DEFAULT_STRATEGY),
+    // Default maze is a 50x50 square one with Kruksal algorithm.
+    m_width(50u),
+    m_height(50u),
+    m_strategy(maze::Strategy::RandomizedKruskal),
     m_sides(4u),
     m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height, m_strategy))
   {
@@ -293,6 +285,36 @@ namespace pge {
       utils::ChronoMilliseconds c("Maze generated", "maze");
       m_maze->generate();
     }
+  }
+
+  void
+  Game::load(const std::string& file) {
+
+    // Generate a new maze.
+    maze::MazeShPtr m = maze::Maze::fromFile(file);
+    if (m == nullptr) {
+      error("Failed to load maze from file \"" + file + "\"");
+
+      return;
+    }
+
+    // In case the loading succeeded, reset the internal
+    // attribute.
+    m_maze = m;
+
+    // Update internal properties.
+    m_width = m_maze->width();
+    m_height = m_maze->height();
+    m_sides = m_maze->sides();
+  }
+
+  void
+  Game::save(const std::string& file) const {
+    if (m_maze == nullptr) {
+      return;
+    }
+
+    m_maze->save(file);
   }
 
   void

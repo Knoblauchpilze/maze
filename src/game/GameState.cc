@@ -61,13 +61,15 @@ namespace {
 namespace pge {
 
   GameState::GameState(const olc::vi2d& dims,
-                       const Screen& screen):
+                       const Screen& screen,
+                       Game& game):
     utils::CoreObject("state"),
 
     // Assign a different screen so that we can use the
     // `setScreen` routine to initialize the visibility
     // status of screens.
     m_screen(screen == Screen::Home ? Screen::Exit : Screen::Home),
+    m_game(game),
 
     m_home(nullptr),
     m_loadGame(nullptr),
@@ -113,6 +115,11 @@ namespace pge {
   }
 
   void
+  GameState::save() const {
+    m_game.save(m_savedGames.generateNewName());
+  }
+
+  void
   GameState::render(olc::PixelGameEngine* pge) const {
     m_home->render(pge);
     m_loadGame->render(pge);
@@ -143,8 +150,8 @@ namespace pge {
 
   void
   GameState::onSavedGamePicked(const std::string& game) {
-    /// TODO: SHould handle that.
-    log("Picked " + game);
+    m_game.load(game);
+    setScreen(Screen::Game);
   }
 
   void

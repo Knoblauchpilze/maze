@@ -11,8 +11,6 @@
 # include "TopViewFrame.hh"
 # include "App.hh"
 
-/// TODO: Serialize mazes.
-
 int
 main(int /*argc*/, char** /*argv*/) {
   // Create the logger.

@@ -3,6 +3,7 @@
 
 # include <string>
 # include <vector>
+# include <unordered_set>
 # include <core_utils/CoreObject.hh>
 # include <core_utils/Signal.hh>
 # include "Menu.hh"
@@ -39,6 +40,14 @@ namespace pge {
       void
       refresh();
 
+      /**
+       * @brief - Used to genertae a new name for a saved game in the
+       *          directory which is not used yet.
+       * @return - a new name for the file.
+       */
+      std::string
+      generateNewName() const noexcept;
+
     public:
 
       /**
@@ -54,6 +63,9 @@ namespace pge {
       update();
 
     private:
+
+      /// @brief - Convenience define for a list of file names.
+      using Files = std::unordered_set<std::string>;
 
       /**
        * @brief - The directory where saved games are stored.
@@ -98,6 +110,19 @@ namespace pge {
        * @brief - The menu representing the next page option.
        */
       MenuShPtr m_next;
+
+      /**
+       * @brief - The current index reached when requesting new
+       *          names for saved files.
+       */
+      mutable unsigned m_fileIndex;
+
+      /**
+       * @brief - The list of files currently available in the
+       *          directory. Allows to not overwrite any file
+       *          when generating a new name for a saved game.
+       */
+      mutable Files m_existingFiles;
 
     public:
 
