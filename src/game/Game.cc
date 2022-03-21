@@ -302,6 +302,12 @@ namespace pge {
     // attribute.
     m_maze = m;
 
+    log(
+      "Loaded maze from file \"" + file + "\" with dimensions " +
+      std::to_string(m_maze->width()) + "x" + std::to_string(m_maze->height()),
+      utils::Level::Info
+    );
+
     // Update internal properties.
     m_width = m_maze->width();
     m_height = m_maze->height();

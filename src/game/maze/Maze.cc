@@ -1,6 +1,10 @@
 
 # include "Maze.hh"
 # include <fstream>
+# include <core_utils/CoreException.hh>
+# include "Triangle.hh"
+# include "Square.hh"
+# include "Hexagon.hh"
 
 namespace maze {
 
@@ -76,9 +80,52 @@ namespace maze {
   }
 
   MazeShPtr
-  Maze::fromFile(const std::string& /*file*/) {
+  Maze::fromFile(const std::string& file) {
+    // Open the file and verify that it is valid.
+    std::ifstream out(file.c_str());
+    if (!out.good()) {
+      throw utils::CoreException(
+        "Failed to load maze from file \"" + file + "\"",
+        "maze",
+        "maze",
+        "No such file"
+      );
+    }
+
+    // Read the dimensions and general properties.
+    unsigned w = 0u, h = 0u, sides = 0u;
+
+    out.read(reinterpret_cast<char*>(&w), sizeof(unsigned));
+    out.read(reinterpret_cast<char*>(&h), sizeof(unsigned));
+    out.read(reinterpret_cast<char*>(&sides), sizeof(unsigned));
+
+    // Consistency check.
+    if (w == 0u || h == 0u || (sides != 3u && sides != 4u && sides != 6u)) {
+      throw utils::CoreException(
+        "Failed to load maze from file \"" + file + "\"",
+        "maze",
+        "maze",
+        "Invalid maze definition " + std::to_string(w) + "x" +
+        std::to_string(h) + " sides: " + std::to_string(sides)
+      );
+    }
+
+    MazeShPtr mz;
+    switch (sides) {
+      case 3u:
+        mz = std::make_shared<TriangleMaze>(w, h, Strategy::RandomizedKruskal);
+        break;
+      case 4u:
+        mz = std::make_shared<SquareMaze>(w, h, Strategy::RandomizedKruskal);
+        break;
+      case 6u:
+      default:
+        mz = std::make_shared<HexagonMaze>(w, h, Strategy::RandomizedKruskal);
+        break;
+    }
+
     /// TODO: Handle loading of maze from file.
-    return nullptr;
+    return mz;
   }
 
   void
