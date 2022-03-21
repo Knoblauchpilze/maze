@@ -206,6 +206,7 @@ namespace pge {
     m_loadGame->addMenu(m);
 
     m_savedGames.generate(m_loadGame);
+    m_savedGames.refresh();
   }
 
   void

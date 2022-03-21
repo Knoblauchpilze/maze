@@ -129,6 +129,7 @@ namespace pge {
     DirIt it(m_dir);
 
     m_saves.clear();
+    m_existingFiles.clear();
 
     log("Scanning directory \"" + m_dir + "\" for saved games", utils::Level::Debug);
 
@@ -140,6 +141,9 @@ namespace pge {
       // the output.
       std::string path = sg.path();
       std::string name = path.substr(m_dir.size() + 1u);
+
+      // In any case, register this file.
+      m_existingFiles.insert(path);
 
       // Also, only keep files matching the extension
       // provided to this object.
