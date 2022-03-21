@@ -53,7 +53,10 @@ namespace pge {
 
     m_games(),
     m_previous(),
-    m_next()
+    m_next(),
+
+    m_fileIndex(0u),
+    m_existingFiles()
   {
     setService("saves");
   }
@@ -167,6 +170,22 @@ namespace pge {
 
     // Update the display.
     update();
+  }
+
+  std::string
+  SavedGames::generateNewName() const noexcept {
+    // Loop until we find a file name which does not
+    // exist yet in the directory.
+    std::string out = m_dir + "/save_" + std::to_string(m_fileIndex) + "." + m_ext;
+
+    while (m_existingFiles.count(out) > 0) {
+      ++m_fileIndex;
+      out = m_dir + "/save_" + std::to_string(m_fileIndex) + "." + m_ext;
+    }
+
+    m_existingFiles.insert(out);
+
+    return out;
   }
 
   void

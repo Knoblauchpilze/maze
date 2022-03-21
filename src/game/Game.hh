@@ -152,6 +152,22 @@ namespace pge {
       void
       generateMaze();
 
+      /**
+       * @brief - Loads the maze defined in the input file.
+       * @param file - the file to use to load a maze from.
+       */
+      void
+      load(const std::string& file);
+
+      /**
+       * @brief - Save the currently generated maze to a default
+       *          file with the name provided in input.
+       * @param file - the file to save the maze into.
+       *          In case no maze is available, nothing happens.
+       */
+      void
+      save(const std::string& file) const;
+
     private:
 
       /**

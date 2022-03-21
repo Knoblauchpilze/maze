@@ -7,6 +7,7 @@
 # include "olcEngine.hh"
 # include "Menu.hh"
 # include "SavedGames.hh"
+# include "Game.hh"
 
 namespace pge {
 
@@ -29,9 +30,11 @@ namespace pge {
        *          state.
        * @param dims - the dimensions of the desired UI.
        * @param screen - the current screen.
+       * @param game - the game attached to this state.
        */
       GameState(const olc::vi2d& dims,
-                const Screen& screen);
+                const Screen& screen,
+                Game& game);
 
       /**
        * @brief - Destructor to disconnect the signal from the
@@ -52,6 +55,14 @@ namespace pge {
        */
       void
       setScreen(const Screen& screen);
+
+      /**
+       * @brief - Save the state of this game to a file named
+       *          based on the existing files in the directory
+       *          where saved games exist.
+       */
+      void
+      save() const;
 
       /**
        * @brief - Used to render the screen corresponding to
@@ -106,6 +117,11 @@ namespace pge {
        *          to change it.
        */
       Screen m_screen;
+
+      /**
+       * @brief - The game attached to this state.
+       */
+      Game& m_game;
 
       /**
        * @brief - Defines the screen to display when the game is

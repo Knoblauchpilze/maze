@@ -1,5 +1,6 @@
 
 # include "Maze.hh"
+# include <fstream>
 
 namespace maze {
 
@@ -16,7 +17,7 @@ namespace maze {
 
     m_cellSides(sides),
 
-    m_cells(width * height, Cell(sides, false))
+    m_cells(m_width * m_height, Cell(m_cellSides, false))
   {
     setService("maze");
   }
@@ -72,6 +73,43 @@ namespace maze {
     for (unsigned id = 0u ; id < m_cells.size() ; ++id) {
       m_cells[id].close();
     }
+  }
+
+  MazeShPtr
+  Maze::fromFile(const std::string& /*file*/) {
+    /// TODO: Handle loading of maze from file.
+    return nullptr;
+  }
+
+  void
+  Maze::save(const std::string& file) const {
+    // Open the file and verify that it is valid.
+    std::ofstream out(file.c_str());
+    if (!out.good()) {
+      error(
+        "Failed to save world to \"" + file + "\"",
+        "Failed to open file"
+      );
+    }
+
+    // Save the dimensions of the maze and the type of
+    // the cells.
+    unsigned size = sizeof(unsigned);
+    const char* raw = reinterpret_cast<const char*>(&m_width);
+    out.write(raw, size);
+
+    raw = reinterpret_cast<const char*>(&m_height);
+    out.write(raw, size);
+
+    raw = reinterpret_cast<const char*>(&m_cellSides);
+    out.write(raw, size);
+
+    /// TODO: Handle serialization of maze.
+
+    // Close the file so that we save the data.
+    out.close();
+
+    log("Saved maze to \"" + file + "\"", utils::Level::Info);
   }
 
   void
