@@ -13,8 +13,14 @@
 /// @brief - The height of the sides menu in pixels.
 # define SIDES_MENU_HEIGHT 50
 
+/// @brief - The height of the strategy menu in pixels.
+# define STRATEGY_MENU_HEIGHT 50
+
 /// @brief - The default dimensions of the maze.
 # define MAZE_DEFAULT_DIMENSIONS 50
+
+/// @brief - The default generation strategy for the maze.
+# define MAZE_DEFAULT_STRATEGY maze::Strategy::RandomizedKruskal
 
 namespace {
 
@@ -62,8 +68,9 @@ namespace pge {
 
     m_width(MAZE_DEFAULT_DIMENSIONS),
     m_height(MAZE_DEFAULT_DIMENSIONS),
+    m_strategy(MAZE_DEFAULT_STRATEGY),
     m_sides(4u),
-    m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height))
+    m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height, m_strategy))
   {
     setService("game");
   }
@@ -84,9 +91,11 @@ namespace pge {
 
     olc::vi2d pos;
     olc::vi2d dims(50, STATUS_MENU_HEIGHT);
-    m_menus.width = generateMenu(pos, dims, "Width: " + std::to_string(m_width), "width");
-    m_menus.height = generateMenu(pos, dims, "Height: " + std::to_string(m_height), "height");
-    m_menus.sides = generateMenu(pos, dims, "Sides: " + std::to_string(m_sides), "sides");
+    std::string str = "Dims: " + std::to_string(m_width) + "x" + std::to_string(m_height);
+    m_menus.dims = generateMenu(pos, dims, str, "dims");
+    m_menus.strategy = generateMenu(pos, dims, "Strategy: " + maze::strategyToString(m_strategy), "strat");
+    str = (m_sides == 3u ? "triangle" : m_sides == 4u ? "square" : "hexagon");
+    m_menus.sides = generateMenu(pos, dims, "Cell kind: " + str, "sides");
     MenuShPtr gen = generateMenu(pos, dims, "Generate !", "generate", true);
     gen->setSimpleAction(
       [this](Game& g) {
@@ -95,13 +104,13 @@ namespace pge {
     );
 
     // Register menus in the parent.
-    status->addMenu(m_menus.width);
-    status->addMenu(m_menus.height);
+    status->addMenu(m_menus.dims);
+    status->addMenu(m_menus.strategy);
     status->addMenu(m_menus.sides);
     status->addMenu(gen);
 
-    // Generate the menu for the type of cells.
-    MenuShPtr cells = generateMenu(olc::vi2d(0, height - SIDES_MENU_HEIGHT), olc::vi2d(width, SIDES_MENU_HEIGHT), "", "sides");
+    // Generate the menu for the generation properties.
+    MenuShPtr props = generateMenu(olc::vi2d(0, height - SIDES_MENU_HEIGHT), olc::vi2d(width, SIDES_MENU_HEIGHT), "", "sides");
 
     dims = olc::vi2d(50, SIDES_MENU_HEIGHT);
 
@@ -110,9 +119,9 @@ namespace pge {
     MenuShPtr hexagon = generateMenu(pos, dims, "Hexagon", "hexagon", true, true);
 
     // Register menus in the parent.
-    cells->addMenu(triangle);
-    cells->addMenu(square);
-    cells->addMenu(hexagon);
+    props->addMenu(triangle);
+    props->addMenu(square);
+    props->addMenu(hexagon);
     triangle->setSimpleAction(
       [this](Game& g) {
         g.setCellSidesCount(3u);
@@ -129,11 +138,35 @@ namespace pge {
       }
     );
 
+    MenuShPtr kruskal = generateMenu(pos, dims, "Kruskal", "kruskal", true, true);
+    MenuShPtr prim = generateMenu(pos, dims, "Prim", "prim", true, true);
+    MenuShPtr aldousBroder = generateMenu(pos, dims, "Aldous Broder", "aldousbroder", true, true);
+
+    // Register menus in the parent.
+    props->addMenu(kruskal);
+    props->addMenu(prim);
+    props->addMenu(aldousBroder);
+    kruskal->setSimpleAction(
+      [this](Game& g) {
+        g.setGenerationStrategy(maze::Strategy::RandomizedKruskal);
+      }
+    );
+    prim->setSimpleAction(
+      [this](Game& g) {
+        g.setGenerationStrategy(maze::Strategy::RandomizedPrim);
+      }
+    );
+    aldousBroder->setSimpleAction(
+      [this](Game& g) {
+        g.setGenerationStrategy(maze::Strategy::AldousBroder);
+      }
+    );
+
     // Package menus for output.
     std::vector<MenuShPtr> menus;
 
     menus.push_back(status);
-    menus.push_back(cells);
+    menus.push_back(props);
 
     return menus;
   }
@@ -204,6 +237,22 @@ namespace pge {
   }
 
   void
+  Game::setGenerationStrategy(const maze::Strategy& strategy) noexcept {
+    // Only available when the game is not paused.
+    if (m_state.paused) {
+      return;
+    }
+
+    // Prevent updates with no changes.
+    if (m_strategy == strategy) {
+      return;
+    }
+
+    m_strategy = strategy;
+    resetMaze();
+  }
+
+  void
   Game::setCellSidesCount(unsigned sides) noexcept {
     // Only available when the game is not paused.
     if (m_state.paused) {
@@ -235,7 +284,8 @@ namespace pge {
     log(
       "Generating maze with dimensions " +
       std::to_string(m_width) + "x" + std::to_string(m_height) +
-      " and " + std::to_string(m_sides) + " side(s)",
+      " and " + std::to_string(m_sides) + " side(s) with strategy " +
+      maze::strategyToString(m_strategy),
       utils::Level::Info
     );
 
@@ -260,8 +310,8 @@ namespace pge {
   void
   Game::updateUI() {
     // Update the dimensions of the maze.
-    m_menus.width->setText("Width: " + std::to_string(m_width));
-    m_menus.height->setText("Height: " + std::to_string(m_height));
+    std::string str = "Dims: " + std::to_string(m_width) + "x" + std::to_string(m_height);
+    m_menus.dims->setText(str);
 
     // Update the number of sides of each cell.
     std::string text = "Unknown";
@@ -279,6 +329,8 @@ namespace pge {
         break;
     }
 
+    m_menus.strategy->setText("Strategy: " + maze::strategyToString(m_strategy));
+
     m_menus.sides->setText("Cell kind: " + text);
   }
 
@@ -289,13 +341,13 @@ namespace pge {
 
     switch (m_sides) {
       case 3u:
-        m_maze = std::make_shared<maze::TriangleMaze>(m_width, m_height);
+        m_maze = std::make_shared<maze::TriangleMaze>(m_width, m_height, m_strategy);
         break;
       case 4u:
-        m_maze = std::make_shared<maze::SquareMaze>(m_width, m_height);
+        m_maze = std::make_shared<maze::SquareMaze>(m_width, m_height, m_strategy);
         break;
       case 6u:
-        m_maze = std::make_shared<maze::HexagonMaze>(m_width, m_height);
+        m_maze = std::make_shared<maze::HexagonMaze>(m_width, m_height, m_strategy);
         break;
       default:
         break;
@@ -306,14 +358,16 @@ namespace pge {
         "Failed to generate new maze",
         "Unsupported configuration with dimensions " +
         std::to_string(m_width) + "x" + std::to_string(m_height) +
-        " and " + std::to_string(m_sides) + " side(s)"
+        " and " + std::to_string(m_sides) + " side(s) with strategy " +
+        maze::strategyToString(m_strategy)
       );
     }
 
     log(
       "Created new maze with dimensions " +
       std::to_string(m_width) + "x" + std::to_string(m_height) +
-      " and " + std::to_string(m_sides) + " side(s)",
+      " and " + std::to_string(m_sides) + " side(s) with strategy " +
+      maze::strategyToString(m_strategy),
       utils::Level::Info
     );
   }

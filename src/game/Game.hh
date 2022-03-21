@@ -131,6 +131,14 @@ namespace pge {
       setMazeHeight(unsigned height) noexcept;
 
       /**
+       * @brief - Defines the strategy to use to generate the
+       *          maze.
+       * @param strategy - the new generation strategy.
+       */
+      void
+      setGenerationStrategy(const maze::Strategy& strategy) noexcept;
+
+      /**
        * @brief - Defines the number of sides for each cell of
        *          the maze of the game.
        * @param sides - the number of sides for the cells.
@@ -199,11 +207,11 @@ namespace pge {
       /// @brief - Convenience structure allowing to regroup
       /// all info about the menu in a single struct.
       struct Menus {
-        // The current width of the maze.
-        MenuShPtr width;
+        // The current dimensions of the maze.
+        MenuShPtr dims;
 
-        // The current height of the maze.
-        MenuShPtr height;
+        // The current generation strategy of the maze.
+        MenuShPtr strategy;
 
         // The current number of sides for each cell of the maze.
         MenuShPtr sides;
@@ -229,6 +237,11 @@ namespace pge {
        * @brief - The height of the maze.
        */
       unsigned m_height;
+
+      /**
+       * @brief - The strategy to generate the maze.
+       */
+      maze::Strategy m_strategy;
 
       /**
        * @brief - The number of sides for the cells of the maze.

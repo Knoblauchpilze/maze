@@ -3,8 +3,8 @@
 
 namespace maze {
 
-  HexagonMaze::HexagonMaze(unsigned width, unsigned height):
-    Maze(width, height, 6u)
+  HexagonMaze::HexagonMaze(unsigned width, unsigned height, const Strategy& strategy):
+    Maze(width, height, strategy, 6u)
   {}
 
   bool
