@@ -111,7 +111,7 @@ class Maze {
 };
 ```
 
-The idea is that for one cell we have to be able to uniquely identify a fe properties that can then be used during the generation.
+The idea is that for one cell we have to be able to uniquely identify a few properties that can then be used during the generation.
 
 #### inverted
 
@@ -218,13 +218,21 @@ Each algorithm has its strenghts and weaknesses.
 
 ### Randomized Kruksal
 
-TODO: Handle kruksal doc.
+Shortly described, the idea of the alrogithm is to remark that in order to obtain a connected maze, we have to connect cells in a unique path. This is achieved by assigning identifiers to `regions` (i.e. groups of cells) and then randomly trying to open doors on cells: whenever we obtain cells that belong to a different region, it means that the path defined by each cell was not connected yet and so we can merge the two regions. Otherwise, we already have a unique way to connect the two cells and so we pick another door to open.
+
+This gives an exact value for the number of doors to open (which is equal to the number of cells) and allows to implement the algorithm quite easily.
+
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Kruskal's_algorithm).
 
 ### Randomized Prim
+
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm).
 
 TODO: Handle Prim doc.
 
 ### Aldous-Broder
+
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Aldous-Broder_algorithm).
 
 TODO: Handle Aldous-Broder doc.
 
