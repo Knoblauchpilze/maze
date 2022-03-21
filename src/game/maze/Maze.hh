@@ -6,6 +6,7 @@
 # include <core_utils/CoreObject.hh>
 # include "Cell.hh"
 # include "Opening.hh"
+# include "Generator.hh"
 
 namespace maze {
 
@@ -16,11 +17,13 @@ namespace maze {
        * @brief - Create a new maze with the specified dimensions.
        * @param width - the width of the maze in cells.
        * @param height - the height of the maze in cells.
+       * @param strategy - the strategy to use to generate the maze.
        * @param sides - the number of sides of the cells for this
        *                maze.
        */
       Maze(unsigned width,
            unsigned height,
+           const Strategy& strategy,
            unsigned sides = 4u);
 
       /**
@@ -164,6 +167,11 @@ namespace maze {
 
     protected:
 
+      /// @brief - Friend declaration of the generation function.
+      friend void kruksal::generate(Maze& m);
+      friend void prim::generate(Maze& m);
+      friend void aldousbroder::generate(Maze& m);
+
       /**
        * @brief - The width of the maze in cells.
        */
@@ -173,6 +181,11 @@ namespace maze {
        * @brief - The height of the maze in cells.
        */
       unsigned m_height;
+
+      /**
+       * @brief - The strategy to use to generate the maze.
+       */
+      Strategy m_strategy;
 
       /**
        * @brief - The number of sides on each cell.s

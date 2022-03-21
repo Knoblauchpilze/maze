@@ -3,8 +3,8 @@
 
 namespace maze {
 
-  SquareMaze::SquareMaze(unsigned width, unsigned height):
-    Maze(width, height, 4u)
+  SquareMaze::SquareMaze(unsigned width, unsigned height, const Strategy& strategy):
+    Maze(width, height, strategy, 4u)
   {}
 
   bool

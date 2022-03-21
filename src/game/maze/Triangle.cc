@@ -3,8 +3,8 @@
 
 namespace maze {
 
-  TriangleMaze::TriangleMaze(unsigned width, unsigned height):
-    Maze(width, height, 3u)
+  TriangleMaze::TriangleMaze(unsigned width, unsigned height, const Strategy& strategy):
+    Maze(width, height, strategy, 3u)
   {}
 
   bool

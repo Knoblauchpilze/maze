@@ -68,12 +68,12 @@ namespace pge {
       m_game->performAction(tp.x + it.x, tp.y + it.y);
     }
 
-    if (c.keys[controls::keys::P]) {
-      m_game->togglePause();
-    }
-
     if (c.keys[controls::keys::G]) {
       m_game->generateMaze();
+    }
+
+    if (c.keys[controls::keys::S]) {
+      /// TODO: Handle the save.
     }
   }
 
@@ -81,6 +81,7 @@ namespace pge {
   App::loadData() {
     // Create the game and its state.
     m_game = std::make_shared<Game>();
+    m_game->resume();
   }
 
   void

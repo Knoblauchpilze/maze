@@ -22,6 +22,7 @@ namespace pge {
 
         P,
         G,
+        S,
 
         KeysCount
       };

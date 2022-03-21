@@ -12,7 +12,7 @@ namespace pge {
     m_dLayer(0u),
     m_uiLayer(0u),
 
-    m_debugOn(true),
+    m_debugOn(false),
     m_uiOn(true),
 
     m_controls(controls::newState()),
@@ -201,6 +201,9 @@ namespace pge {
 
     b = GetKey(olc::G);
     m_controls.keys[controls::keys::G] = b.bReleased;
+
+    b = GetKey(olc::S);
+    m_controls.keys[controls::keys::S] = b.bReleased;
 
     b = GetKey(olc::TAB),
     m_controls.tab = b.bReleased;

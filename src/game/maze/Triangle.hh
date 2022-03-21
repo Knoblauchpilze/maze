@@ -13,8 +13,9 @@ namespace maze {
        *          input dimensions.
        * @param width - the width of the maze.
        * @param height - the height of the maze.
+       * @param strategy - the strategy to generate the maze.
        */
-      TriangleMaze(unsigned width, unsigned height);
+      TriangleMaze(unsigned width, unsigned height, const Strategy& strategy);
 
       /**
        * @brief - Implementation of the interface method to handle
