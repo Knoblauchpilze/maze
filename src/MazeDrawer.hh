@@ -30,6 +30,15 @@ namespace maze {
       void
       draw() const noexcept;
 
+      /**
+       * @brief - Perform the drawing of an overlay at the specified
+       *          coordinates.
+       * @param x - the x coordinate where the overlay should be drawn.
+       * @param y - the y coordinate where the overlay should be drawn.
+       */
+      void
+      drawOverlay(float x, float y) const noexcept;
+
     private:
 
       /**
@@ -37,9 +46,11 @@ namespace maze {
        *          it in case it is not currently visible.
        * @param x - the x coordinate of the cell.
        * @param y - the y coordinate of the cell.
+       * @param color - the color to use to draw the cell.
+       * @param doors - whether or not the doors should be displayed.
        */
       void
-      drawCell(unsigned x, unsigned y) const noexcept;
+      drawCell(unsigned x, unsigned y, const olc::Pixel& color, bool doors) const noexcept;
 
       /**
        * @brief - Draw the door with the specified index for the
