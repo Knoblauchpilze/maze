@@ -1,6 +1,21 @@
 
 # include "MazeDrawer.hh"
 
+namespace {
+
+  void
+  equation(float x1, float y1, float x2, float y2, float& m, float& p) noexcept {
+    m = (y2 - y1) / (x2 - x1);
+    p = y1;
+  }
+
+  bool
+  aboveLine(float x, float y, float m, float p) noexcept {
+    return y >= m * x + p;
+  }
+
+}
+
 namespace triangle {
 
   bool
@@ -585,20 +600,126 @@ namespace maze {
 
   void
   MazeDrawer::draw() const noexcept {
+    // The color of the cell.
+    olc::Pixel cell(13, 2, 8);
+
     // We assume the cell `0, 0` of the maze has the same
     // world coordinates.
     for (unsigned y = 0u ; y < m_maze.height() ; ++y) {
       for (unsigned x = 0u ; x < m_maze.width() ; ++x) {
-        drawCell(x, y);
+        drawCell(x, y, cell, true);
       }
     }
   }
 
   void
-  MazeDrawer::drawCell(unsigned x, unsigned y) const noexcept {
-    // The color of the cell.
-    olc::Pixel cell(13, 2, 8);
+  MazeDrawer::drawOverlay(float x, float y) const noexcept {
+    // The color of the overlay.
+    olc::Pixel cell(0, 255, 0, pge::alpha::AlmostTransparent);
 
+    // The input coordinates represent the position of the
+    // mouse in tiles. However, it might be that due to the
+    // way we represent the maze it does not correspond one
+    // to one to the actual cell.
+    // The first step is thus to determine the position of
+    // the cell.
+    int cx, cy;
+
+    switch (m_maze.sides()) {
+      case 3u:
+        cx = static_cast<int>(2.0f * std::floor(x + 0.5f));
+        cy = static_cast<int>(std::floor(y + 0.5f));
+        break;
+      case 4u:
+        cx = static_cast<int>(std::floor(x + 0.5f));
+        cy = static_cast<int>(std::floor(y + 0.5f));
+        break;
+      case 6u: {
+        cx = static_cast<int>(std::floor(x + 0.5f));
+        cy = static_cast<int>(std::floor(y + 0.5f));
+
+        // For even columns, mind the top left and bottom left
+        // corner.
+        if (cx % 2 == 0) {
+          float m, p;
+
+          // Bottom left region.
+          float tmpX = x - cx;
+          float tmpY = y - cy;
+          equation(-0.5f, 0.0f, -0.5f + 0.333f, 0.5f, m, p);
+
+          if (aboveLine(tmpX - -0.5f, tmpY, m, p)) {
+            --cx;
+            ++cy;
+          }
+
+          // Top left region.
+          tmpX = x - cx;
+          tmpY = y - cy;
+          equation(-0.5f, 0.0f, -0.5f + 0.333f, -0.5f, m, p);
+
+          if (!aboveLine(tmpX - -0.5f, tmpY, m, p)) {
+            --cx;
+          }
+        }
+        // For odd columns, the situation is more complex.
+        else {
+          float m1, p1, m2, p2;
+          bool lower = (y - cy > 0.0f);
+
+          bool changed = false;
+
+          // Left region.
+          equation(-0.5f, -0.5f, -0.5f + 0.333f, 0.0f, m1, p1);
+          equation(-0.5f, +0.5f, -0.5f + 0.333f, 0.0f, m2, p2);
+
+          float tmpX = x - cx;
+          float tmpY = y - cy;
+          if (aboveLine(tmpX - -0.5f, tmpY, m1, p1) && !aboveLine(tmpX - -0.5f, tmpY, m2, p2)) {
+            --cx;
+            changed = true;
+          }
+
+          // Bottom region.
+          equation(-0.5f, -0.5f, -0.5f + 0.333f, 0.0f, m1, p1);
+          equation(-0.5f, +0.5f, -0.5f + 0.333f, 0.0f, m2, p2);
+
+          tmpX = x - cx;
+          tmpY = y - cy;
+          if (!changed && (!aboveLine(tmpX - -0.5f, tmpY, m1, p1) || aboveLine(tmpX - -0.5f, tmpY, m2, p2))) {
+            if (lower) {
+              ++cy;
+            }
+          }
+        }
+        } break;
+      default:
+        warn(
+          "Failed to draw overlay for cell " + std::to_string(x) + "x" + std::to_string(y),
+          "Cell having " + std::to_string(m_maze.sides()) + " doors is not a supported"
+        );
+        return;
+    }
+
+    // log(
+    //   "pos: " + std::to_string(x) + "x" + std::to_string(y) +
+    //   ", c: " + std::to_string(cx) + "x" + std::to_string(cy)
+    // );
+
+    // In case the cell is out of the maze, do not draw any
+    // overlay.
+    if (cx < 0 || static_cast<unsigned>(cx) >= m_maze.width() || cy < 0 || static_cast<unsigned>(cy) >= m_maze.height()) {
+      return;
+    }
+
+    // The maze is drawn upside down.
+    unsigned dy = m_maze.height() - 1u - cy;
+
+    drawCell(cx, dy, cell, false);
+  }
+
+  void
+  MazeDrawer::drawCell(unsigned x, unsigned y, const olc::Pixel& color, bool doors) const noexcept {
     // The maze is drawn upside down.
     unsigned dy = m_maze.height() - 1u - y;
 
@@ -610,17 +731,17 @@ namespace maze {
     switch (m_maze.sides()) {
       case 3u:
         if (triangle::visible(x, dy, m_frame)) {
-          triangle::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, cell);
+          triangle::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, color);
         }
         break;
       case 4u:
         if (square::visible(x, dy, m_frame)) {
-          square::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, cell);
+          square::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, color);
         }
         break;
       case 6u:
         if (hexagon::visible(x, dy, m_frame)) {
-          hexagon::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, cell);
+          hexagon::draw(x, dy, m_maze.inverted(x, y), m_frame, m_pge, color);
         }
         break;
       default:
@@ -631,7 +752,11 @@ namespace maze {
         return;
     }
 
-    // And draw each door.
+    // And draw each door if needed.
+    if (!doors) {
+      return;
+    }
+
     const maze::Cell& c = m_maze.at(x, y);
     for (unsigned id = 0u ; id < c.doors() ; ++id) {
       if (!c(id)) {
