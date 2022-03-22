@@ -612,7 +612,7 @@ namespace maze {
     }
   }
 
-  void
+  olc::vi2d
   MazeDrawer::drawOverlay(float x, float y) const noexcept {
     // The color of the overlay.
     olc::Pixel cell(0, 255, 0, pge::alpha::AlmostTransparent);
@@ -627,8 +627,61 @@ namespace maze {
 
     switch (m_maze.sides()) {
       case 3u:
-        cx = static_cast<int>(2.0f * std::floor(x + 0.5f));
+        cx = 2 * static_cast<int>(std::floor(x + 0.5f));
         cy = static_cast<int>(std::floor(y + 0.5f));
+
+        // For inverted position, we need to notice the bottom
+        // left and right region.
+        if (cy % 2 == 0u) {
+          float m, p;
+
+          bool changed = false;
+
+          // Left region.
+          equation(-0.5f, -0.5f, 0.0f, 0.5f, m, p);
+
+          float tmpX = x - cx / 2;
+          float tmpY = y - cy;
+          if (aboveLine(tmpX - -0.5f, tmpY, m, p)) {
+            --cx;
+            changed = true;
+          }
+
+          // Right region.
+          equation(0.0f, 0.5f, 0.5f, -0.5f, m, p);
+
+          tmpX = x - cx / 2;
+          tmpY = y - cy;
+          if (!changed && aboveLine(tmpX, tmpY, m, p)) {
+            ++cx;
+          }
+        }
+        // For regular position, we need to notice the top left
+        // and right region.
+        else {
+          float m, p;
+
+          bool changed = false;
+
+          // Left region.
+          equation(-0.5f, 0.5f, 0.0f, -0.5f, m, p);
+
+          float tmpX = x - cx / 2;
+          float tmpY = y - cy;
+          if (!aboveLine(tmpX - -0.5f, tmpY, m, p)) {
+            --cx;
+            changed = true;
+          }
+
+          // Right region.
+          equation(0.0f, -0.5f, 0.5f, 0.5f, m, p);
+
+          tmpX = x - cx / 2;
+          tmpY = y - cy;
+          if (!changed && !aboveLine(tmpX, tmpY, m, p)) {
+            ++cx;
+          }
+        }
         break;
       case 4u:
         cx = static_cast<int>(std::floor(x + 0.5f));
@@ -698,24 +751,21 @@ namespace maze {
           "Failed to draw overlay for cell " + std::to_string(x) + "x" + std::to_string(y),
           "Cell having " + std::to_string(m_maze.sides()) + " doors is not a supported"
         );
-        return;
+        return olc::vi2d(-1, -1);
     }
-
-    // log(
-    //   "pos: " + std::to_string(x) + "x" + std::to_string(y) +
-    //   ", c: " + std::to_string(cx) + "x" + std::to_string(cy)
-    // );
 
     // In case the cell is out of the maze, do not draw any
     // overlay.
     if (cx < 0 || static_cast<unsigned>(cx) >= m_maze.width() || cy < 0 || static_cast<unsigned>(cy) >= m_maze.height()) {
-      return;
+      return olc::vi2d(cx, cy);
     }
 
     // The maze is drawn upside down.
     unsigned dy = m_maze.height() - 1u - cy;
 
     drawCell(cx, dy, cell, false);
+
+    return olc::vi2d(cx, cy);
   }
 
   void

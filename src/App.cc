@@ -4,8 +4,6 @@
 # include <maths_utils/ComparisonUtils.hh>
 # include "MazeDrawer.hh"
 
-/// TODO: Handle overlay based on the cell renderer.
-
 namespace pge {
 
   App::App(const AppDesc& desc):
@@ -214,25 +212,20 @@ namespace pge {
   void
   App::drawMaze(const RenderDesc& res) noexcept {
     const maze::Maze& m = m_game->maze();
-
     maze::MazeDrawer md(res.cf, m, this);
     md.draw();
   }
 
   void
   App::drawOverlays(const RenderDesc& res) noexcept {
-    SpriteDesc sd = {};
-    sd.loc = pge::RelativePosition::Center;
-    sd.radius = 1.0f;
-
+    // Use the dedicated handler from the drawer.
     olc::vi2d mp = GetMousePos();
-    olc::vi2d mtp = res.cf.pixelCoordsToTiles(mp, nullptr);
+    olc::vf2d it;
+    olc::vi2d mtp = res.cf.pixelCoordsToTiles(mp, &it);
 
-    sd.x = 1.0f * mtp.x;
-    sd.y = 1.0f * mtp.y;
-
-    sd.sprite.tint = olc::Pixel(0, 255, 0, pge::alpha::AlmostTransparent);
-    drawRect(sd, res.cf);
+    const maze::Maze& m = m_game->maze();
+    maze::MazeDrawer md(res.cf, m, this);
+    md.drawOverlay(mtp.x + it.x, mtp.y + it.y);
   }
 
 }
