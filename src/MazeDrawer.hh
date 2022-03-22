@@ -35,8 +35,11 @@ namespace maze {
        *          coordinates.
        * @param x - the x coordinate where the overlay should be drawn.
        * @param y - the y coordinate where the overlay should be drawn.
+       * @return - the corrected coordinates of the overlay or (-1, -1)
+       *           in case the number of cells for the maze is not
+       *           supported.
        */
-      void
+      olc::vi2d
       drawOverlay(float x, float y) const noexcept;
 
     private:
