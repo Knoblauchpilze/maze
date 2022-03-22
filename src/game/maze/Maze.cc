@@ -2,6 +2,8 @@
 # include "Maze.hh"
 # include <fstream>
 # include <core_utils/CoreException.hh>
+# include <core_utils/BitReader.hh>
+# include <core_utils/BitWriter.hh>
 # include "Triangle.hh"
 # include "Square.hh"
 # include "Hexagon.hh"
@@ -124,7 +126,21 @@ namespace maze {
         break;
     }
 
-    /// TODO: Handle loading of maze from file.
+    // Read the cells.
+    utils::BitReader br(out);
+    for (unsigned y = 0u ; y < h ; ++y) {
+      for (unsigned x = 0u ; x < w ; ++x) {
+        // Reset the doors of the cell.
+        Cell& c = mz->m_cells[mz->linear(x, y)];
+        c.close();
+
+        // Update doors based on the content of the file.
+        for (unsigned d = 0u ; d < c.doors() ; ++d) {
+          c.toggle(d, br.read());
+        }
+      }
+    }
+
     return mz;
   }
 
@@ -151,7 +167,19 @@ namespace maze {
     raw = reinterpret_cast<const char*>(&m_cellSides);
     out.write(raw, size);
 
-    /// TODO: Handle serialization of maze.
+    // NOTE: we want to store a single bit for each door.
+    // This is not possible out of the box from the tools
+    // provided by the fstream but we can accumulate the
+    // bits and flush them when needed.
+    utils::BitWriter bw(out);
+    for (unsigned id = 0u ; id < m_cells.size() ; ++id) {
+      const Cell& c = m_cells[id];
+      for (unsigned d = 0u ; d < c.doors() ; ++d) {
+        bw.push(c(d));
+      }
+    }
+
+    bw.flush(false);
 
     // Close the file so that we save the data.
     out.close();
