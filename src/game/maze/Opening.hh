@@ -52,6 +52,17 @@ namespace maze {
       close(unsigned door) noexcept;
 
       /**
+       * @brief - Used to determine whether the door at the input
+       *          index is valid to be opened or not.
+       * @param door - the door to be opened. In case the door is
+       *               not within the admissible range we assume
+       *               it can't be opened.
+       * @return - `true` if the door can be opened.
+       */
+      bool
+      canBeOpened(unsigned door) const noexcept;
+
+      /**
        * @brief - Pick a random door to open among the ones that
        *          are not yet opened.
        *          In case all the doors are obstructed, the output

@@ -44,6 +44,15 @@ namespace maze {
     }
   }
 
+  bool
+  Opening::canBeOpened(unsigned door) const noexcept {
+    if (door >= m_doors.size()) {
+      return false;
+    }
+
+    return m_doors[door];
+  }
+
   unsigned
   Opening::breach(bool& boxed) const noexcept {
     // In case there are no doors left to open, do
