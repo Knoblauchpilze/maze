@@ -13,7 +13,7 @@ namespace maze {
   enum class Strategy {
     RandomizedKruskal,
     RandomizedPrim,
-    AldousBroder
+    DepthFirst
   };
 
   /**
@@ -34,7 +34,7 @@ namespace maze {
 
     /**
      * @brief - Generate a maze with a random Kruksal algorithm.
-     * @param m - the maze: used to query properties about cells.
+     * @param m - the maze used to query properties about cells.
      */
     void
     generate(Maze& m);
@@ -45,18 +45,18 @@ namespace maze {
 
     /**
      * @brief - Generate a maze with a randomized Prim algorithm.
-     * @param m - the maze: used to query properties about cells.
+     * @param m - the maze used to query properties about cells.
      */
     void
     generate(Maze& m);
 
   }
 
-  namespace aldousbroder {
+  namespace depthfirst {
 
     /**
-     * @brief - Generate a maze with the Aldous-Broder algorithm.
-     * @param m - the maze: used to query properties about cells.
+     * @brief - Generate a maze with a depth first algorithm.
+     * @param m - the maze used to query properties about cells.
      */
     void
     generate(Maze& m);

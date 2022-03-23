@@ -2,6 +2,7 @@
 # include "Generator.hh"
 # include <numeric>
 # include <unordered_set>
+# include <stack>
 # include "Maze.hh"
 # include "Opening.hh"
 
@@ -14,8 +15,8 @@ namespace maze {
         return "Randomized Kruskal";
       case Strategy::RandomizedPrim:
         return "Randomized Prim";
-      case Strategy::AldousBroder:
-        return "Aldous-Broder";
+      case Strategy::DepthFirst:
+        return "Depth-first";
       default:
         return "unknown";
     }
@@ -330,12 +331,92 @@ namespace maze {
 
   }
 
-  namespace aldousbroder {
+  namespace depthfirst {
+
+    /// @brief - Convenience structure describing a cell.
+    struct Cell {
+      // The x coordinate of the cell.
+      unsigned x;
+
+      // The y coordinate of the cell.
+      unsigned y;
+    };
+
+    std::string
+    hash(unsigned x, unsigned y) noexcept {
+      return std::to_string(x) + "x" + std::to_string(y);
+    }
 
     void
     generate(Maze& m) {
-      /// TODO: Handle generation with Aldous-Broder.
-      m.warn("Should handle generation of maze with Aldous-Broder");
+      // The algorithm is taken from here:
+      // https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation
+      unsigned size = m.width() * m.height();
+
+      // We start with a grid full of walls.
+      m.close();
+
+      // Generate the list of cells to visit.
+      std::stack<Cell> toVisit;
+      std::unordered_set<std::string> visited;
+
+      // Select a random starting cell.
+      unsigned id = std::rand() % size;
+      unsigned x = id % m.width();
+      unsigned y = id / m.width();
+
+      toVisit.push(Cell{x, y});
+
+      // While there are cells to explore, continue.
+      while (!toVisit.empty()) {
+        // Visit the current cell.
+        Cell c = toVisit.top();
+        toVisit.pop();
+
+        visited.insert(hash(c.x, c.y));
+
+        // Generate the unvisited neighbors of this cell.
+        Opening o(c.x, c.y, m.sides(), m.inverted(c.x, c.y));
+        m.prepareOpening(o);
+
+        std::vector<unsigned> neighbors;
+
+        for (unsigned d = 0u ; d < m.sides() ; ++d) {
+          if (!o.canBeOpened(d)) {
+            continue;
+          }
+
+          id = m.idFromDoorAndCell(c.x, c.y, d);
+          x = id % m.width();
+          y = id / m.width();
+
+          // Prevent cells to be generated if they already exist.
+          if (visited.count(hash(x, y)) > 0) {
+            continue;
+          }
+
+          neighbors.push_back(d);
+        }
+
+        // In case no neighbors are available, stop the progress.
+        if (neighbors.empty()) {
+          continue;
+        }
+
+        // Otherwise, push back the cell on the stack.
+        toVisit.push(c);
+
+        // Pick a random neighbor, open the door between it and
+        // the current cell, and then push it on top of the stack.
+        unsigned d = neighbors[std::rand() % neighbors.size()];
+
+        id = m.linear(c.x, c.y);
+        unsigned id2 = m.idFromDoorAndCell(c.x, c.y, d);
+        m.m_cells[id].toggle(d, true);
+        m.m_cells[id2].toggle(m.opposite(d, m.inverted(c.x, c.y)), true);
+
+        toVisit.push(Cell{id2 % m.width(), id2 / m.width()});
+      }
     }
 
   }

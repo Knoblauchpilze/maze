@@ -197,7 +197,7 @@ namespace maze {
       /// @brief - Friend declaration of the generation function.
       friend void kruksal::generate(Maze& m);
       friend void prim::generate(Maze& m);
-      friend void aldousbroder::generate(Maze& m);
+      friend void depthfirst::generate(Maze& m);
 
       /**
        * @brief - The width of the maze in cells.

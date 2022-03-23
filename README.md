@@ -232,11 +232,11 @@ We continue to attempt to visit cells as long as we have walls to explore.
 
 A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm).
 
-### Aldous-Broder
+### Randomized depth-first
 
-A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Aldous-Broder_algorithm).
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation).
 
-TODO: Handle Aldous-Broder doc.
+TODO: Handle Depth-first doc.
 
 # The UI
 
