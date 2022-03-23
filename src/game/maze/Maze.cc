@@ -201,7 +201,9 @@ namespace maze {
       case Strategy::RandomizedPrim:
         prim::generate(*this);
         break;
-      case Strategy::AldousBroder:
+      case Strategy::DepthFirst:
+        depthfirst::generate(*this);
+        break;
       default:
         warn(
           "Failed to generate maze",

@@ -60,7 +60,7 @@ namespace pge {
     // Default maze is a 50x50 square one with Kruksal algorithm.
     m_width(50u),
     m_height(50u),
-    m_strategy(maze::Strategy::RandomizedKruskal),
+    m_strategy(maze::Strategy::DepthFirst),
     m_sides(4u),
     m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height, m_strategy))
   {
@@ -132,7 +132,7 @@ namespace pge {
 
     MenuShPtr kruskal = generateMenu(pos, dims, "Kruskal", "kruskal", true, true);
     MenuShPtr prim = generateMenu(pos, dims, "Prim", "prim", true, true);
-    MenuShPtr aldousBroder = generateMenu(pos, dims, "Aldous Broder", "aldousbroder", true, true);
+    MenuShPtr aldousBroder = generateMenu(pos, dims, "Depth-first", "depthfirst", true, true);
 
     // Register menus in the parent.
     props->addMenu(kruskal);
@@ -150,7 +150,7 @@ namespace pge {
     );
     aldousBroder->setSimpleAction(
       [this](Game& g) {
-        g.setGenerationStrategy(maze::Strategy::AldousBroder);
+        g.setGenerationStrategy(maze::Strategy::DepthFirst);
       }
     );
 
