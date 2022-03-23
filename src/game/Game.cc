@@ -60,7 +60,7 @@ namespace pge {
     // Default maze is a 50x50 square one with Kruksal algorithm.
     m_width(50u),
     m_height(50u),
-    m_strategy(maze::Strategy::DepthFirst),
+    m_strategy(maze::Strategy::RandomizedKruskal),
     m_sides(4u),
     m_maze(std::make_shared<maze::SquareMaze>(m_width, m_height, m_strategy))
   {
