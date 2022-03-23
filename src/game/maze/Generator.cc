@@ -23,13 +23,50 @@ namespace maze {
 
   namespace kruksal {
 
+    /// @brief - Convenience structure defining a wall: this helps
+    /// speeding up the process of picking a door.
+    struct Door {
+      // The x coordinate of the starting cell.
+      unsigned x;
+
+      // The y coordinate of the starting cell.
+      unsigned y;
+
+      // The index of the door.
+      unsigned d;
+    };
+
     void
     generate(Maze& m) {
       // Generation variables.
       unsigned size = m.width() * m.height();
       std::vector<unsigned> ids(size, 0u);
+      std::vector<Door> doors;
 
       std::iota(ids.begin(), ids.end(), 0);
+
+      // Prepare the list of doors to consider.
+      for (unsigned id = 0u ; id < size ; ++id) {
+        unsigned x = id % m.width();
+        unsigned y = id / m.width();
+
+        Opening o(x, y, m.sides(), m.inverted(x, y));
+        m.prepareOpening(o);
+
+        bool boxed = false;
+        o.breach(boxed);
+        if (boxed) {
+          m.error("Cell " + std::to_string(x) + "x" + std::to_string(y) + " is boxed, can't open wall");
+        }
+
+        for (unsigned d = 0u ; d < m.sides() ; ++d) {
+          if (!o.canBeOpened(d)) {
+            continue;
+          }
+
+          doors.push_back(Door{x, y, d});
+        }
+      }
 
       // Close all doors in the maze.
       m.close();
@@ -37,38 +74,28 @@ namespace maze {
       // The algorithm used is taken from this article (in French):
       // https://fr.wikipedia.org/wiki/Mod%C3%A9lisation_math%C3%A9matique_d%27un_labyrinthe#Fusion_al%C3%A9atoire_de_chemins
       unsigned opened = 0u;
+      unsigned processed = 0u;
       unsigned walls = size - 1u;
 
+      // As long as we didnt open enough walls.
       while (opened < walls) {
-        bool valid = true;
+        bool valid = false;
 
-        // Find a wall to open.
-        do {
+        while (!valid) {
           valid = true;
-          // Pick a random cell.
-          /// TODO: Optimize picking a random cell by maintining
-          /// a list of walls.
-          unsigned id1 = std::rand() % size;
-          unsigned x1 = id1 % m.width();
-          unsigned y1 = id1 / m.width();
-          bool inv1 = m.inverted(x1, y1);
 
-          Opening o(x1, y1, m.sides(), inv1);
-          m.prepareOpening(o);
+          // Pick a random wall to open. Once done, move it to the
+          // end of the list so that it is not considered anymore.
+          unsigned id = std::rand() % (doors.size() - 1u - processed);
+          Door door = doors[id];
+          std::swap(doors[id], doors[doors.size() - 1u - processed]);
+          ++processed;
 
-          // Pick a door to open.
-          bool boxed = false;
-          unsigned door = o.breach(boxed);
-
-          if (boxed) {
-            m.error("Cell " + std::to_string(x1) + "x" + std::to_string(y1) + " is boxes, can't open wall");
-
-            valid = false;
-            continue;
-          }
+          unsigned id1 = m.linear(door.x, door.y);
+          unsigned inv1 = m.inverted(door.x, door.y);
 
           // Compute the cell on the other side of the door.
-          unsigned id2 = m.idFromDoorAndCell(x1, y1, door);
+          unsigned id2 = m.idFromDoorAndCell(door.x, door.y, door.d);
 
           // Consistency check.
           if (id2 > size) {
@@ -86,19 +113,9 @@ namespace maze {
             continue;
           }
 
-          m.log(
-            "Merging regions " + std::to_string(ids[id1]) +
-            " to " + std::to_string(ids[id2]) +
-            " after opening door " + m.doorName(door, inv1) +
-            " in " + std::to_string(x1) + "x" + std::to_string(y1) +
-            " to door " + m.doorName(m.opposite(door, inv1), m.inverted(id2 % m.width(), id2 / m.width())) +
-            " in " + std::to_string(id2 % m.width()) + "x" + std::to_string(id2 / m.width()),
-            utils::Level::Verbose
-          );
-
           // Open the wall for both cells.
-          m.m_cells[id1].toggle(door, true);
-          m.m_cells[id2].toggle(m.opposite(door, inv1), true);
+          m.m_cells[id1].toggle(door.d, true);
+          m.m_cells[id2].toggle(m.opposite(door.d, inv1), true);
 
           // And equalize the identifiers for both regions.
           unsigned toReplace = std::max(ids[id1], ids[id2]);
@@ -109,7 +126,7 @@ namespace maze {
               ids[id] = newArea;
             }
           }
-        } while (!valid);
+        }
 
         // Opened one more wall.
         ++opened;
