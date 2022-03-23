@@ -234,9 +234,11 @@ A more comprehensive description of the algorithm can be found on [Wikipedia](ht
 
 ### Randomized depth-first
 
-A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation).
+This algorithm is quite simple but is biased towards long corridors. The principle is to pick a random cell and mark it as visited. Then check if any of the neighbors are not visited yet. If it's the case, add back the cell and the new neighbor to the stack of nodes to visit and open the door between the current cell and the picked neighbor.
 
-TODO: Handle Depth-first doc.
+Then repeat until there are no more cells in the stack. Over time all the neighbors of each cell will be exhausted and we will obtain a complete coverage of the maze.
+
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation).
 
 # The UI
 
