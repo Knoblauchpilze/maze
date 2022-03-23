@@ -226,9 +226,11 @@ A more comprehensive description of the algorithm can be found on [Wikipedia](ht
 
 ### Randomized Prim
 
-A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm).
+The idea is to start with a maze with all walls created. Then we pick a random cell and add all its walls to the processing list. Throughout the algorithm we maintain this list of walls and pick one at random. If the wall allows to transition from one visited cell to a not visited one then we open the wall. We then need to register the walls connecting the new cell and mark the new cell as visited.
 
-TODO: Handle Prim doc.
+We continue to attempt to visit cells as long as we have walls to explore.
+
+A more comprehensive description of the algorithm can be found on [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm).
 
 ### Aldous-Broder
 

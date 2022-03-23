@@ -199,6 +199,8 @@ namespace maze {
         kruksal::generate(*this);
         break;
       case Strategy::RandomizedPrim:
+        prim::generate(*this);
+        break;
       case Strategy::AldousBroder:
       default:
         warn(
