@@ -289,7 +289,6 @@ namespace pge {
 
   void
   Game::load(const std::string& file) {
-
     // Generate a new maze.
     maze::MazeShPtr m = maze::Maze::fromFile(file);
     if (m == nullptr) {
