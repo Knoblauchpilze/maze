@@ -139,7 +139,7 @@ Convenience method to assign a name to the door: this is mainly useful to debug 
 
 A triangular maze is a regular tiling of the plane with triangles. In order to connect correctly the triangles with each other, we have to resort to the `inverted` mechanism: this will basically turn some of the triangles upside down to connect them better.
 
-The doors are named `"right"`, `"bottom"`, `"left"` and `"top"`, but not all of them are availabel in all triangles: which ones precisely are available depend on whether the triangle is inverted.
+The doors are named `"right"`, `"bottom"`, `"left"` and `"top"`, but not all of them are available in all triangles: which ones precisely are available depend on whether the triangle is inverted.
 
 ![Triangle](resources/triangle.png)
 
