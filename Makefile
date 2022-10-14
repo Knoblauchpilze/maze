@@ -19,7 +19,7 @@ copyDebug:
 copy:
 	mkdir -p sandbox/
 	rsync -avH data sandbox/
-	mkdir sandbox/data/saves
+	mkdir sandbox/data/mazes
 	mv sandbox/data/*.sh sandbox/
 
 sandbox: release copy copyRelease
