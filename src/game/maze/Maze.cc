@@ -184,7 +184,7 @@ namespace maze {
     // Close the file so that we save the data.
     out.close();
 
-    log("Saved maze to \"" + file + "\"", utils::Level::Info);
+    info("Saved maze to \"" + file + "\"");
   }
 
   void
