@@ -167,7 +167,7 @@ namespace pge {
   Game::performAction(float /*x*/, float /*y*/) {
     // Only handle actions when the game is not disabled.
     if (m_state.disabled) {
-      log("Ignoring action while menu is disabled");
+      debug("Ignoring action while menu is disabled");
       return;
     }
   }
@@ -273,12 +273,11 @@ namespace pge {
       return;
     }
 
-    log(
+    info(
       "Generating maze with dimensions " +
       std::to_string(m_width) + "x" + std::to_string(m_height) +
       " and " + std::to_string(m_sides) + " side(s) with strategy " +
-      maze::strategyToString(m_strategy),
-      utils::Level::Info
+      maze::strategyToString(m_strategy)
     );
 
     {
@@ -301,10 +300,9 @@ namespace pge {
     // attribute.
     m_maze = m;
 
-    log(
+    info(
       "Loaded maze from file \"" + file + "\" with dimensions " +
-      std::to_string(m_maze->width()) + "x" + std::to_string(m_maze->height()),
-      utils::Level::Info
+      std::to_string(m_maze->width()) + "x" + std::to_string(m_maze->height())
     );
 
     // Update internal properties.
@@ -327,10 +325,10 @@ namespace pge {
     m_state.disabled = !enable;
 
     if (m_state.disabled) {
-      log("Disabled game UI", utils::Level::Verbose);
+      verbose("Disabled game UI");
     }
     else {
-      log("Enabled game UI", utils::Level::Verbose);
+      verbose("Enabled game UI");
     }
   }
 
@@ -390,12 +388,11 @@ namespace pge {
       );
     }
 
-    log(
+    info(
       "Created new maze with dimensions " +
       std::to_string(m_width) + "x" + std::to_string(m_height) +
       " and " + std::to_string(m_sides) + " side(s) with strategy " +
-      maze::strategyToString(m_strategy),
-      utils::Level::Info
+      maze::strategyToString(m_strategy)
     );
   }
 
